@@ -39,7 +39,7 @@
 *.x86_64
 *.hex
 *.wbin
-bin/
+bin/*
 
 # Debug files
 *.dSYM/
