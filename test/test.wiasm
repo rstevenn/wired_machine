@@ -1,0 +1,74 @@
+ram_size:  640000
+stack_size:40000
+
+ENTRY:
+    scall 0
+    
+    load  ra rb
+    loadi ra 128
+    loada ra 0xFFF
+
+    save ra rb
+    savei ra 128
+    savea  0xFFF ra
+    saveai 0xFFF 0128
+
+    add   ra rb rc
+    addi  ra rb 128
+    min   ra rb rc
+    mini  ra rb 128
+    mult  ra rb rc
+    multi ra rb 128
+    loadi rc 128
+    div   ra rb rc
+    divi  ra rb 128
+
+    and   ra rb rc
+    andi  ra rb 128
+    or    ra rb rc
+    ori   ra rb 128
+    xor   ra rb rc
+    xori  ra rb 128
+    not   ra rb 
+    noti  ra 128
+
+    eq    ra rb
+    eqi   ra 128
+    neq   ra rb
+    neqi  ra 128
+
+    gt    ra rb
+    gti   ra 128
+    gte   ra rb
+    gtei  ra 128    
+
+    lt    ra rb
+    lti   ra 128
+    lte   ra rb
+    ltei  ra 128
+
+    loadi ra 16
+    jre   ra 
+    jrei  0x10
+
+    jeq   ra 
+    jeqi  0x438
+    jeqi  FLAG0 
+
+FLAG0:
+    loadi ra 1136
+    jne   ra 
+    jnei  0x480
+    jnei  FLAG1 
+
+FLAG1:
+    loadi ra 1208
+    jmp   ra 
+    jmpi  0x4c8
+    jmpi  FLAG2
+
+FLAG2:
+    jmp_th   ra 
+    jmp_thi  0x480
+    jmp_thi  FLAG2
+    jmpi     FLAG2
