@@ -22,6 +22,6 @@ Build:
 > ./build_wired_machine.bat
 
 Run:
-> ./bin/wiasm_to_bin.exe  ./test/test.wiasm
+> ./bin/wiasm_to_bin.exe  ./test/test.wiasm \ 
 > ./bin/wired_machine.exe ./out.wbin
 
