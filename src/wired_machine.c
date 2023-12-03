@@ -9,7 +9,7 @@
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
-#define TH_SWITCH 1
+#define TH_SWITCH 8
 
 
 //#undef INFO
@@ -264,61 +264,44 @@ int main(int argc, char *argv[]) {
 
     // math
     case (ADD_INST) : {
-      INFO("ADD")
-      registers[op.args[0]] = registers[op.args[1]] + registers[op.args[2]];
+      pc_set = exec_lst[ADD_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (ADDI_INST) : {
-      INFO("ADDI")
-      registers[op.args[0]] = registers[op.args[1]] + op.args[2];
+      pc_set = exec_lst[ADDI_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (MIN_INST) : {
-      INFO("MIN")
-      registers[op.args[0]] = registers[op.args[1]] - registers[op.args[2]];
+      pc_set = exec_lst[MIN_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (MINI_INST) : {
-      INFO("MINI")
-      registers[op.args[0]] = registers[op.args[1]] - op.args[2];
+      pc_set = exec_lst[MINI_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (MULT_INST) : {
-      INFO("MULT")
-      registers[op.args[0]] = registers[op.args[1]] * registers[op.args[2]];
+      pc_set = exec_lst[MULT_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (MULTI_INST) : {
-      INFO("MULTI")
-      registers[op.args[0]] = registers[op.args[1]] * op.args[2];
+      pc_set = exec_lst[MULTI_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (DIV_INST) : {
-      INFO("DIV")
-#if (SANITIZE_MATH == 1)
-        if (registers[op.args[2]] == 0)
-          ERROR("Divide by 0")
-#endif 
-      registers[op.args[0]] = registers[op.args[1]] / registers[op.args[2]];
+      pc_set = exec_lst[DIV_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
 
     case (DIVI_INST) : {
-      INFO("DIVI")
-#if (SANITIZE_MATH == 1)
-        if (op.args[2] == 0)
-          ERROR("Divide by 0")
-#endif 
-      registers[op.args[0]] = registers[op.args[1]] / op.args[2];
+      pc_set = exec_lst[DIVI_INST].run(&op, vm_ram, registers, &header, SANITYZE_MEM, SANITIZE_MATH);
       break;
     }
-
     // logic
     case (AND_INST) : {
       INFO("AND")
@@ -564,6 +547,7 @@ int main(int argc, char *argv[]) {
     }
 
     case (JMP_TH_INST) : {
+      exit(0);
       INFO("JMP_TH")
 
       uint64_t addr = registers[op.args[0]];
