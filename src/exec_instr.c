@@ -7,26 +7,11 @@ const exec_t* init_exec_list() {
     if (memset(exec_list, 0, NB_INST) == NULL)
         ERROR("can't set memory")
 
-#define ACT(fnct) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-EXEC_INST_LOOP()
-#undef ACT
-    exec_list[SCALL_INST]  = (exec_t){(exec_inst_t*)&exec_scall, 1};
-    exec_list[LOAD_INST]   = (exec_t){(exec_inst_t*)&exec_load, 1};
-    exec_list[LOADI_INST]  = (exec_t){(exec_inst_t*)&exec_loadi, 1};
-    exec_list[LOADA_INST]  = (exec_t){(exec_inst_t*)&exec_loada, 1};
-    exec_list[SAVE_INST]   = (exec_t){(exec_inst_t*)&exec_save, 1};
-    exec_list[SAVEI_INST]  = (exec_t){(exec_inst_t*)&exec_savei, 1};
-    exec_list[SAVEA_INST]  = (exec_t){(exec_inst_t*)&exec_savea, 1};
-    exec_list[SAVEAI_INST] = (exec_t){(exec_inst_t*)&exec_saveai, 1};
-    exec_list[ADD_INST]    = (exec_t){(exec_inst_t*)&exec_add, 1};
-    exec_list[ADDI_INST]   = (exec_t){(exec_inst_t*)&exec_addi, 1};
-    exec_list[MIN_INST]    = (exec_t){(exec_inst_t*)&exec_min, 1};
-    exec_list[MINI_INST]   = (exec_t){(exec_inst_t*)&exec_mini, 1};
-    exec_list[MULT_INST]   = (exec_t){(exec_inst_t*)&exec_mult, 1};
-    exec_list[MULTI_INST]  = (exec_t){(exec_inst_t*)&exec_multi, 1};
-    exec_list[DIV_INST]    = (exec_t){(exec_inst_t*)&exec_div, 1};
-    exec_list[DIVI_INST]   = (exec_t){(exec_inst_t*)&exec_divi, 1};
-
+    // macro black magic
+    #define ACT(fnct, id) exec_list[id]  = (exec_t){(exec_inst_t*)&fnct, 1};
+    EXEC_INST_LOOP()
+    #undef ACT
+    
     return (const exec_t*)exec_list;
 }
 
@@ -167,3 +152,4 @@ char exec_divi(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* 
     registers[op->args[0]] = registers[op->args[1]] / op->args[2];
     return 0;
 }
+

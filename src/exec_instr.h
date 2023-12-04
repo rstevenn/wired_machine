@@ -16,26 +16,27 @@ typedef struct {
 } exec_t;
 
 // exec fnct
+// macro black magic
 #define EXEC_INST_LOOP() \
-ACT(exec_scall)  \
-ACT(exec_load)   \
-ACT(exec_loadi)  \
-ACT(exec_loada)  \
-ACT(exec_save)   \
-ACT(exec_savei)  \
-ACT(exec_savea)  \
-ACT(exec_saveai) \
-ACT(exec_add)    \
-ACT(exec_addi)   \
-ACT(exec_min)    \
-ACT(exec_mini)   \
-ACT(exec_mult)   \
-ACT(exec_multi)  \
-ACT(exec_div)    \
-ACT(exec_divi)   
+ACT(exec_scall,  SCALL_INST) \
+ACT(exec_load,   LOAD_INST)  \
+ACT(exec_loadi,  LOADI_INST) \
+ACT(exec_loada,  LOADA_INST) \
+ACT(exec_save,   SAVE_INST)  \
+ACT(exec_savei,  SAVEI_INST) \
+ACT(exec_savea,  SAVEA_INST) \
+ACT(exec_saveai, SAVEAI_INST)\
+ACT(exec_add,    ADD_INST)   \
+ACT(exec_addi,   ADDI_INST)  \
+ACT(exec_min,    MIN_INST)   \
+ACT(exec_mini,   MINI_INST)  \
+ACT(exec_mult,   MULT_INST)  \
+ACT(exec_multi,  MULTI_INST) \
+ACT(exec_div,    DIV_INST)   \
+ACT(exec_divi,   DIVI_INST)   
 
-
-#define ACT(fnct) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
+// fnct prototypes
+#define ACT(fnct, id) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
 EXEC_INST_LOOP()
 #undef ACT
 
