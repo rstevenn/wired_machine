@@ -7,6 +7,9 @@ const exec_t* init_exec_list() {
     if (memset(exec_list, 0, NB_INST) == NULL)
         ERROR("can't set memory")
 
+#define ACT(fnct) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
+EXEC_INST_LOOP()
+#undef ACT
     exec_list[SCALL_INST]  = (exec_t){(exec_inst_t*)&exec_scall, 1};
     exec_list[LOAD_INST]   = (exec_t){(exec_inst_t*)&exec_load, 1};
     exec_list[LOADI_INST]  = (exec_t){(exec_inst_t*)&exec_loadi, 1};

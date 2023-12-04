@@ -16,25 +16,28 @@ typedef struct {
 } exec_t;
 
 // exec fnct
-char exec_scall(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
+#define EXEC_INST_LOOP() \
+ACT(exec_scall)  \
+ACT(exec_load)   \
+ACT(exec_loadi)  \
+ACT(exec_loada)  \
+ACT(exec_save)   \
+ACT(exec_savei)  \
+ACT(exec_savea)  \
+ACT(exec_saveai) \
+ACT(exec_add)    \
+ACT(exec_addi)   \
+ACT(exec_min)    \
+ACT(exec_mini)   \
+ACT(exec_mult)   \
+ACT(exec_multi)  \
+ACT(exec_div)    \
+ACT(exec_divi)   
 
-char exec_load(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_loadi(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_loada(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
 
-char exec_save(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_savei(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_savea(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_saveai(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-
-char exec_add(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_addi(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_min(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_mini(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_mult(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_multi(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_div(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
-char exec_divi(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
+#define ACT(fnct) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
+EXEC_INST_LOOP()
+#undef ACT
 
 // exec list
 extern exec_t exec_list[];
