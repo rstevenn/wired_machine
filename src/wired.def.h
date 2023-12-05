@@ -2,6 +2,7 @@
 #define __WIRED_DEFS__
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #define HEADER "WIRED"
 

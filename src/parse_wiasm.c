@@ -1,6 +1,5 @@
 #include "parse_wiasm.h"
 
-
 // parse args
 void parse_scall_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id > 0)
@@ -249,7 +248,7 @@ void parse_xori_arg(char* buffer, unsigned int id, operation_t* op){
 
 void parse_not_arg(char* buffer, unsigned int id, operation_t* op){
     if (id > 1)
-        ERROR("Too much args for a XOR instr")
+        ERROR("Too much args for a NOT instr")
 
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
@@ -259,7 +258,7 @@ void parse_not_arg(char* buffer, unsigned int id, operation_t* op){
 
 void parse_noti_arg(char* buffer, unsigned int id, operation_t* op){
     if (id > 1)
-        ERROR("Too much args for a XORI instr")
+        ERROR("Too much args for a NOTI instr")
 
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);

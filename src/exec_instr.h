@@ -33,7 +33,9 @@ ACT(exec_mini,   MINI_INST)  \
 ACT(exec_mult,   MULT_INST)  \
 ACT(exec_multi,  MULTI_INST) \
 ACT(exec_div,    DIV_INST)   \
-ACT(exec_divi,   DIVI_INST)   
+ACT(exec_divi,   DIVI_INST)  \
+ACT(exec_and,    AND_INST)   
+
 
 // fnct prototypes
 #define ACT(fnct, id) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math);
