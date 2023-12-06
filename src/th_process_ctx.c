@@ -16,7 +16,7 @@ ths_t* init_ths() {
   return  threads_ctx;
 }
 
-void add_ctx(uint64_t stack_size, uint64_t pc, uint64_t sp,
+void ths_add_ctx(uint64_t stack_size, uint64_t pc, uint64_t sp,
              uint64_t spl) {
 
   threads_ctx->nb_ths++;
@@ -46,7 +46,7 @@ void add_ctx(uint64_t stack_size, uint64_t pc, uint64_t sp,
     ERROR("Can't allocate stack")
 }
 
-void switch_ctx(uint64_t th_id, registry_t *hr,
+void ths_switch_ctx(uint64_t th_id, registry_t *hr,
                 char *stack_base, size_t stack_size) {
   // store
   vm_th_t *c_thread = &threads_ctx->ths[threads_ctx->current];

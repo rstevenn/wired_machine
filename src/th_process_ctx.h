@@ -1,6 +1,3 @@
-#ifndef __PROCESS_TH_CTX_H__
-#define __PROCESS_TH_CTX_H__
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +5,8 @@
 #include "wired.def.h"
 #include "utils/base_log.h"
 
+#ifndef __PROCESS_TH_CTX_H__
+#define __PROCESS_TH_CTX_H__
 
 // threads ctx
 typedef struct {
