@@ -102,4 +102,5 @@ $rh
 
 // syscalls
 0 : no operation
+1 : exit with exitcode store in $rt
 

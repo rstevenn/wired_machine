@@ -187,4 +187,10 @@ typedef struct {
 } vm_op_t;
 
 
+typedef struct {
+  char pc_set;
+  int exit;
+} wm_state_t;
+
+
 #endif

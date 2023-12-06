@@ -9,7 +9,7 @@
 #ifndef __EXEC_INSTR_H__
 #define __EXEC_INSTR_H__
 
-typedef char (exec_inst_t)(vm_op_t* op, char* vram, uint64_t* regiters, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math); 
+typedef void (exec_inst_t)(vm_op_t* op, char* vram, uint64_t* regiters, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math, ctx_t* ctx, wm_state_t* wm_state); 
 
 typedef struct {
     exec_inst_t* run;
@@ -67,7 +67,7 @@ ACT(exec_jmpth,  JMP_TH_INST)\
 ACT(exec_jmpthi, JMP_THI_INST)  
 
 // fnct prototypes
-#define ACT(fnct, id) char fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math, ctx_t* ctx);
+#define ACT(fnct, id) void fnct(vm_op_t* op, char* vram, uint64_t* registers, wired_vm_header_t* header, char sanityse_mem,  char sanityse_math, ctx_t* ctx, wm_state_t* wm_state);
 EXEC_INST_LOOP()
 #undef ACT
 

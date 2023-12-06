@@ -13,8 +13,8 @@
 #define SANITIZE_MATH 1
 #define TH_SWITCH 8
 
-// #undef INFO
-// #define INFO(...)
+#undef INFO
+#define INFO(...)
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -104,13 +104,17 @@ int main(int argc, char *argv[]) {
   INFO("Launch programm")
   const exec_t *exec_lst = init_exec_list();
 
-  while (1) {
+  wm_state_t wm_state = {0};
+  wm_state.exit = 0;
+  wm_state.pc_set = 0;
+
+  while (!wm_state.exit) {
     // fetch
     INFO("IC: 0x%llu fetch at pc: 0x%llx", (unsigned long long)registers[IC], (unsigned long long)registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
-    char pc_set = 0;
+    wm_state.pc_set = 0;
 
     switch (op_meta.op_size) {
     case (inst_128): {
@@ -148,12 +152,12 @@ int main(int argc, char *argv[]) {
     if (!exec_lst[op.meta.op_code].set)
       ERROR("op 0x%04x not implemented", op.meta.op_code)
 
-    pc_set = exec_lst[op.meta.op_code].run(&op, vm_ram, registers, &header,
-                                           SANITYZE_MEM, SANITIZE_MATH);
+    exec_lst[op.meta.op_code].run(&op, vm_ram, registers, &header,
+                                  SANITYZE_MEM, SANITIZE_MATH, &ctx, &wm_state);
 
     // clock
     registers[IC]++;
-    if (!pc_set) {
+    if (!wm_state.pc_set) {
       switch (op_meta.op_size) {
       case (inst_128): {
         registers[PC] += 2 * sizeof(uint64_t);
@@ -174,9 +178,14 @@ int main(int argc, char *argv[]) {
         ERROR("Invalide op size '%u'", op.meta.op_size)
       }
     }
-
+    
     // multi thread
-    if (registers[IC] % TH_SWITCH == 0) {
+    
+    if (wm_state.exit)
+      threads->ths[threads->current].active = 0;
+    
+    if (registers[IC] % TH_SWITCH == 0 ||
+        wm_state.exit) {
       // find next
       uint64_t old = threads->current;
       uint64_t current = old;
@@ -185,17 +194,22 @@ int main(int argc, char *argv[]) {
         current++;
         if (current > threads->nb_ths - 1)
           current = 0;
-      } while (!threads->ths[current].active);
+      } while (!threads->ths[current].active && current != old);
 
-      ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
-                     header.stack_size);
-      INFO("Switch ctx: [%llu] => [%llu]", (unsigned long long)old, (unsigned long long)current)
+      if (current != old) {
+        ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
+                       header.stack_size);
+        INFO("Switch ctx: [%llu] => [%llu]", (unsigned long long)old, (unsigned long long)current)
+        wm_state.exit = 0;
+      }
     }
   }
-
+  
+  INFO("exit with code %llu", (unsigned long long)registers[RT])
+  
   // clear
   free(vm_ram);
   free(rawText);
   INFO("END")
-  return 0;
+  return registers[RT];
 }

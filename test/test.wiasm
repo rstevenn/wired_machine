@@ -68,7 +68,7 @@ FLAG1:
     jmpi  FLAG2
 
 FLAG2:
-    jmp_th   ra 
-    jmp_thi  0x480
-    jmp_thi  FLAG2
-    jmpi     FLAG2
+    jmp_thi  FLAG3
+FLAG3:
+    loadi    rt 1
+    scall    1
