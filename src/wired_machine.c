@@ -220,6 +220,9 @@ int main(int argc, char *argv[]) {
     }
 
     // decode && execute
+    
+    
+    // old
     switch (op.meta.op_code) {
     case (SCALL_INST): {
       pc_set = exec_lst[SCALL_INST].run(&op, vm_ram, registers, &header,
@@ -589,7 +592,7 @@ int main(int argc, char *argv[]) {
     }
 
     default:
-      ERROR("Unknow op code 0x%04x", op.meta.op_code)
+      WARNING("Unknow op code 0x%04x", op.meta.op_code)
     }
 
     // clock

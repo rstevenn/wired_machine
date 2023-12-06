@@ -190,5 +190,56 @@ char exec_and(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
     return 0;
 }
 
+char exec_andi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("ANDI")
+    registers[op->args[0]] = registers[op->args[1]] & op->args[2];
+    return 0;
+}
 
+char exec_or(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("OR")
+    registers[op->args[0]] = registers[op->args[1]] | registers[op->args[2]];
+    return 0;
+}
 
+char exec_ori(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("ORI")
+    registers[op->args[0]] = registers[op->args[1]] | op->args[2];  
+    return 0;
+}
+
+char exec_xor(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("XOR")
+    registers[op->args[0]] = registers[op->args[1]] ^ registers[op->args[2]];
+    return 0;
+}
+
+char exec_xori(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("XORI")
+    registers[op->args[0]] = registers[op->args[1]] ^ op->args[2];
+    return 0;
+}
+
+char exec_not(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("NOT")
+    registers[op->args[0]] = ~registers[op->args[1]];
+    return 0;
+}
+
+char exec_noti(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("NOTI")
+    registers[op->args[0]] = ~op->args[1];
+    return 0;
+}
+
+char exec_eq(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("EQ")
+    registers[EQ] = (registers[op->args[0]] == registers[op->args[1]]);
+    return 0;
+}
+
+char exec_eqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("EQI")
+    registers[EQ] = (registers[op->args[0]] == op->args[1]);
+    return 0;
+}
