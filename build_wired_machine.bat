@@ -1,1 +1,1 @@
-gcc src/exec_instr.c src/wired_machine.c -o bin/wired_machine.exe
+gcc src/exec_instr.c src/wired_machine.c src/th_process_ctx.c -o bin/wired_machine.exe

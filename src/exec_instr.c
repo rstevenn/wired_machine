@@ -1,4 +1,5 @@
 #include "exec_instr.h"
+#include "th_process_ctx.h"
 
 // exec data
 exec_t exec_list[NB_INST];
@@ -242,4 +243,167 @@ char exec_eqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
     INFO("EQI")
     registers[EQ] = (registers[op->args[0]] == op->args[1]);
     return 0;
+}
+
+char exec_neq(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("NEQ")
+    registers[EQ] = (registers[op->args[0]] != registers[op->args[1]]);
+    return 0;
+}
+
+char exec_neqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("NEQI")
+    registers[EQ] = (registers[op->args[0]] != registers[op->args[1]]);
+    return 0;
+}
+
+char exec_gt(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("GT")
+    registers[EQ] = (registers[op->args[0]] > registers[op->args[1]]);
+    return 0;
+}
+
+char exec_gti(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("GTI")
+    registers[EQ] = (registers[op->args[0]] > op->args[1]);
+    return 0;
+}
+
+char exec_gte(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("GTE")
+    registers[EQ] = (registers[op->args[0]] >= registers[op->args[1]]);
+    return 0;
+}
+
+char exec_gtei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("GTEI")
+    registers[EQ] = (registers[op->args[0]] >= op->args[1]);
+    return 0;
+}
+
+char exec_lt(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("LT")
+    registers[EQ] = (registers[op->args[0]] < registers[op->args[1]]);
+    return 0;
+}
+
+char exec_lti(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("LTI")
+    registers[EQ] = (registers[op->args[0]] < op->args[1]);
+    return 0;
+}
+
+char exec_lte(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("LTE")
+    registers[EQ] = (registers[op->args[0]] <= registers[op->args[1]]);
+    return 0;
+}
+
+char exec_ltei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+    INFO("LTEI")
+    registers[EQ] = (registers[op->args[0]] <= op->args[1]);
+    return 0;
+}
+
+char exec_jre(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JRE")
+  uint64_t addr = registers[PC] + registers[op->args[0]];
+  
+  if (sanityse_mem) {
+    if (addr < 0 || addr > header->ram_size - 1)
+      ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jrei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JRE")
+  uint64_t addr = registers[PC] + op->args[0];
+  if (sanityse_mem) {
+      if (addr < 0 || addr > header->ram_size - 1)
+        ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jeq(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JEQ")
+  if (!registers[EQ]) 
+   return 0;
+
+  uint64_t addr = registers[op->args[0]];
+  if (sanityse_mem) {
+    if (addr < 0 || addr > header->ram_size - 1)
+      ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jeqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JEQI")
+  if (!registers[EQ]) 
+    return 0;
+      
+  uint64_t addr = op->args[0];
+  if (sanityse_mem) {
+    if (addr < 0 || addr > header->ram_size - 1)
+      ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jne(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JNE")
+  if (registers[EQ]) 
+    return 0;
+
+  uint64_t addr = registers[op->args[0]];
+  if (sanityse_mem) {
+    if (addr < 0 || addr > header->ram_size - 1)
+      ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jnei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JNEI")
+  if (registers[EQ]) 
+    return 0;
+
+  uint64_t addr = op->args[0];
+  if (sanityse_mem){
+    if (addr < 0 || addr > header->ram_size - 1)
+        ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jmp(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JMP")
+  uint64_t addr = registers[op->args[0]];
+  
+  if (sanityse_mem){
+    if (addr < 0 || addr > header->ram_size - 1)
+      ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
+}
+
+char exec_jmpi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math) {
+  INFO("JUMPI")
+  uint64_t addr = op->args[0];
+
+  if(sanityse_mem) {
+      if (addr < 0 || addr > header->ram_size - 1)
+        ERROR("Out of range adress 0x%04ldx", addr)
+  }
+  registers[PC] = addr;
+  return 1;
 }

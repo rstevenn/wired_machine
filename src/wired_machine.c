@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "exec_instr.h"
-#include "utils/base_log.h"
 #include "wired.def.h"
+
+#include "exec_instr.h"
+#include "th_process_ctx.h"
+#include "utils/base_log.h"
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
@@ -14,85 +16,6 @@
 // #undef INFO
 // #define INFO(...)
 
-typedef struct {
-  uint64_t regiters[REGISTERS_NB];
-  char *stack;
-  char active;
-} vm_th_t;
-
-typedef struct {
-  vm_th_t *ths;
-  uint64_t nb_ths;
-  uint64_t allocated_ths;
-  uint64_t current;
-} ths_t;
-
-typedef struct {
-  char *stack_base;
-  uint64_t sp;
-  uint64_t spl;
-} ctx_t;
-
-ths_t *init_ths() {
-  ths_t *ths = (ths_t *)malloc(sizeof(ths_t));
-  if (ths == NULL)
-    ERROR("can't allocate memory for thes table")
-
-  ths->ths = NULL;
-  ths->nb_ths = 0;
-  ths->allocated_ths = 0;
-  ths->current = 0;
-  return ths;
-}
-
-void add_ctx(ths_t *threads, uint64_t stack_size, uint64_t pc, uint64_t sp,
-             uint64_t spl) {
-
-  threads->nb_ths++;
-  if (threads->nb_ths > threads->allocated_ths) {
-    if (threads->allocated_ths == 0)
-      threads->allocated_ths = 1;
-
-    threads->ths = (vm_th_t *)realloc(
-        threads->ths, sizeof(vm_th_t) * threads->allocated_ths * 2);
-    threads->allocated_ths *= 2;
-    if (threads->ths == NULL)
-      ERROR("Can't allocate threads")
-  }
-
-  threads->ths[threads->nb_ths - 1].active = 1;
-  char *out = memset(threads->ths[threads->nb_ths - 1].regiters, 0,
-                     sizeof(uint64_t) * REGISTERS_NB);
-  if (out == NULL)
-    ERROR("Can't set registers")
-
-  threads->ths[threads->nb_ths - 1].regiters[PC] = pc;
-  threads->ths[threads->nb_ths - 1].regiters[SP] = sp;
-  threads->ths[threads->nb_ths - 1].regiters[SPL] = spl;
-
-  threads->ths[threads->nb_ths - 1].stack = (char *)malloc(stack_size);
-  if (threads->ths[threads->nb_ths - 1].stack == NULL)
-    ERROR("Can't allocate stack")
-}
-
-void switch_ctx(ths_t *threads, uint64_t th_id, registry_t *hr,
-                char *stack_base, size_t stack_size) {
-  // store
-  vm_th_t *c_thread = &threads->ths[threads->current];
-  if (memcpy(c_thread->regiters, hr, REGISTERS_NB) == NULL)
-    ERROR("Can't copy registers")
-  if (memcpy(c_thread->stack, stack_base, stack_size) == NULL)
-    ERROR("Can't copy vram")
-
-  // load
-  c_thread = &threads->ths[th_id];
-  if (memcpy(hr, c_thread->regiters, REGISTERS_NB) == NULL)
-    ERROR("Can't copy registers")
-  if (memcpy(stack_base, c_thread->stack, stack_size) == NULL)
-    ERROR("Can't copy vram")
-
-  threads->current = th_id;
-}
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -631,8 +554,8 @@ int main(int argc, char *argv[]) {
           current = 0;
       } while (!threads->ths[current].active);
 
-      switch_ctx(threads, current, (registry_t *)registers, ctx.stack_base,
-                 header.stack_size);
+      ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
+                     header.stack_size);
       INFO("Switch ctx: [%ldu] => [%ldu]", old, current)
     }
   }
