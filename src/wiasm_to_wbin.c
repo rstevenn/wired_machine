@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define __HASH_MAP_IMPL__
 #include "utils/base_log.h"
@@ -88,12 +89,12 @@ char *readAllFile(char *path) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %llu chars", (unsigned long long)size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars", (unsigned long)size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %llu != got %llu)",
-                   path, (unsigned long long)size, (unsigned long long)got);
+                   "unable to read the file %s (expected %lu != got %lu)",
+                   path, (unsigned long)size, (unsigned long)got);
   buffer[got] = '\0';
 
   // close file
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
 
   // stack and ram size
   size_t ok;
-  ok = sscanf(rawText, "ram_size:%llu\n", &(header.ram_size));
+  ok = sscanf(rawText, "ram_size:%" SCNu64 "\n", &(header.ram_size));
   if (!ok) {
     ERROR("Invalid ram size or ram size not privided")
   }
@@ -130,7 +131,7 @@ int main(int argc, char *argv[]) {
     ERROR("Stack not privided")
   }
 
-  ok = sscanf(next + 1, "stack_size:%llu\n", &(header.stack_size));
+  ok = sscanf(next + 1, "stack_size:%" SCNu64 "\n", &(header.stack_size));
   if (!ok) {
     ERROR("Invalid stack size or ram size not privided")
   }

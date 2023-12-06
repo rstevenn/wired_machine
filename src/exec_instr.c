@@ -20,7 +20,7 @@ void exec_scall(vm_op_t *op, char *vram, uint64_t *registers,
                 wired_vm_header_t *header, char sanityse_mem,
                 char sanityse_math, ctx_t* ctx, wm_state_t* wm_state) {
 
-  INFO("SCALL 0x%04llx", (unsigned long long)op->args[0])
+  INFO("SCALL 0x%04lx", (unsigned long)op->args[0])
   switch (op->args[0]) {
   case (0): {
     INFO("no op")
@@ -34,7 +34,7 @@ void exec_scall(vm_op_t *op, char *vram, uint64_t *registers,
   }
 
   default:
-    WARNING("Invalid scall number 0x%04llx", (unsigned long long)op->args[0])
+    WARNING("Invalid scall number 0x%04lx", (unsigned long)op->args[0])
     break;
   }
   wm_state->pc_set = 0;
@@ -63,7 +63,7 @@ void exec_loada(vm_op_t *op, char *vram, uint64_t *registers,
 
   if (sanityse_math) {
     if (op->args[1] < 0 || op->args[1] > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)op->args[1])
+      ERROR("Out of range adress 0x%04lx", (unsigned long)op->args[1])
   }
   registers[op->args[0]] = *(vram + op->args[1]);
   wm_state->exit = 0;
@@ -76,7 +76,7 @@ void exec_save(vm_op_t *op, char *vram, uint64_t *registers,
 
   if (sanityse_mem == 1) {
     if (op->args[0] < 0 || op->args[0] > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)op->args[1])
+      ERROR("Out of range adress 0x%04lx", (unsigned long)op->args[1])
   }
   *(vram + registers[op->args[0]]) = registers[op->args[1]];
   wm_state->pc_set = 0;
@@ -88,7 +88,7 @@ void exec_savei(vm_op_t *op, char *vram, uint64_t *registers,
   INFO("SAVEI")
   if (sanityse_mem) {
     if (op->args[0] < 0 || op->args[0] > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)op->args[1])
+      ERROR("Out of range adress 0x%04lx", (unsigned long)op->args[1])
   }
   *(vram + registers[op->args[0]]) = op->args[1];
   wm_state->pc_set = 0;
@@ -100,7 +100,7 @@ void exec_savea(vm_op_t *op, char *vram, uint64_t *registers,
   INFO("SAVEA")
   if (sanityse_mem == 1) {
     if (op->args[0] < 0 || op->args[0] > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)op->args[1])
+      ERROR("Out of range adress 0x%04lx", (unsigned long)op->args[1])
   }
   *(vram + op->args[0]) = registers[op->args[1]];
   wm_state->pc_set = 0;
@@ -112,7 +112,7 @@ void exec_saveai(vm_op_t *op, char *vram, uint64_t *registers,
   INFO("SAVEAI")
   if (sanityse_mem) {
     if (op->args[0] < 0 || op->args[0] > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)op->args[1])
+      ERROR("Out of range adress 0x%04lx", (unsigned long)op->args[1])
   }
   *(vram + op->args[0]) = op->args[1];
   wm_state->pc_set = 0;
@@ -316,7 +316,7 @@ void exec_jre(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
   
   if (sanityse_mem) {
     if (addr < 0 || addr > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+      ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -327,7 +327,7 @@ void exec_jrei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *
   uint64_t addr = registers[PC] + op->args[0];
   if (sanityse_mem) {
       if (addr < 0 || addr > header->ram_size - 1)
-        ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+        ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -343,7 +343,7 @@ void exec_jeq(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
   uint64_t addr = registers[op->args[0]];
   if (sanityse_mem) {
     if (addr < 0 || addr > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+      ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -358,7 +358,7 @@ void exec_jeqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *
   uint64_t addr = op->args[0];
   if (sanityse_mem) {
     if (addr < 0 || addr > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+      ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -372,7 +372,7 @@ void exec_jne(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
   uint64_t addr = registers[op->args[0]];
   if (sanityse_mem) {
     if (addr < 0 || addr > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+      ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -386,7 +386,7 @@ void exec_jnei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *
   uint64_t addr = op->args[0];
   if (sanityse_mem){
     if (addr < 0 || addr > header->ram_size - 1)
-        ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+        ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -398,7 +398,7 @@ void exec_jmp(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
   
   if (sanityse_mem){
     if (addr < 0 || addr > header->ram_size - 1)
-      ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+      ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   wm_state->pc_set = 1;
@@ -410,7 +410,7 @@ void exec_jmpi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *
 
   if(sanityse_mem) {
       if (addr < 0 || addr > header->ram_size - 1)
-        ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+        ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   registers[PC] = addr;
   //exit(1); // only useful for tests
@@ -423,7 +423,7 @@ void exec_jmpth(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t 
 
   if (sanityse_mem) {
       if (addr < 0 || addr > header->ram_size - 1)
-        ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+        ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   ths_add_ctx(header->stack_size, registers[op->args[0]], ctx->sp, ctx->spl);
   wm_state->pc_set = 0;
@@ -434,7 +434,7 @@ void exec_jmpthi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t
   uint64_t addr = op->args[0];
   if (sanityse_mem) {
       if (addr < 0 || addr > header->ram_size - 1)
-        ERROR("Out of range adress 0x%04llx", (unsigned long long)addr)
+        ERROR("Out of range adress 0x%04lx", (unsigned long)addr)
   }
   ths_add_ctx(header->stack_size, op->args[0], ctx->sp, ctx->spl);
   wm_state->pc_set = 0;

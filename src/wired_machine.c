@@ -13,8 +13,8 @@
 #define SANITIZE_MATH 1
 #define TH_SWITCH 8
 
-#undef INFO
-#define INFO(...)
+//#undef INFO
+//#define INFO(...)
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -29,12 +29,12 @@ char *readAllFile(char *path, size_t *file_size_out) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %llu chars", (unsigned long long)size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars", (unsigned long)size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %llu != got %llu)",
-                   path, (unsigned long long)size, (unsigned long long) got);
+                   "unable to read the file %s (expected %lu != got %lu)",
+                   path, (unsigned long)size, (unsigned long) got);
   buffer[got] = '\0';
 
   // close file
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   size_t file_size;
   char *rawText = readAllFile(argv[1], &file_size);
   char *current = rawText;
-  INFO("LOAD: '%s' %llu bits", argv[1], (unsigned long long)file_size)
+  INFO("LOAD: '%s' %lu bits", argv[1], (unsigned long)file_size)
 
   // extract and sanitize header metadata
   if (file_size < sizeof(wired_vm_header_t))
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     ERROR("Entry point out of executable zone");
 
   // setup ram
-  INFO("init ram of %llu bits and load program", (unsigned long long)header.ram_size);
+  INFO("init ram of %lu bits and load program", (unsigned long)header.ram_size);
   char *vm_ram = (char *)malloc(header.ram_size * sizeof(char));
   if (vm_ram == NULL)
     ERROR("Can't allocate ram memory")
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
   while (!wm_state.exit) {
     // fetch
-    INFO("IC: 0x%llu fetch at pc: 0x%llx", (unsigned long long)registers[IC], (unsigned long long)registers[PC])
+    INFO("IC: 0x%lu fetch at pc: 0x%lx", (unsigned long)registers[IC], (unsigned long)registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
     }
 
     default:
-      ERROR("Invalide op size '%ul'", op.meta.op_size)
+      ERROR("Invalide op size '%lu'", (unsigned long)op.meta.op_size)
     }
 
     // decode && execute
@@ -192,6 +192,7 @@ int main(int argc, char *argv[]) {
 
       do {
         current++;
+        
         if (current > threads->nb_ths - 1)
           current = 0;
       } while (!threads->ths[current].active && current != old);
@@ -199,7 +200,7 @@ int main(int argc, char *argv[]) {
       if (current != old) {
         ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
                        header.stack_size);
-        INFO("Switch ctx: [%llu] => [%llu]", (unsigned long long)old, (unsigned long long)current)
+        INFO("Switch ctx: [%lu] => [%lu]", (unsigned long)old, (unsigned long)current)
         wm_state.exit = 0;
       } else {
         INFO("no thread found... exit")
@@ -207,7 +208,7 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  INFO("exit with code %llu", (unsigned long long)registers[RT])
+  INFO("exit with code %lu", (unsigned long)registers[RT])
   
   // clear
   free(vm_ram);

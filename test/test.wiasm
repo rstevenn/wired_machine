@@ -70,5 +70,5 @@ FLAG1:
 FLAG2:
     jmp_thi  FLAG3
 FLAG3:
-    loadi    rt 1
+    loadi    rt 0
     scall    1
