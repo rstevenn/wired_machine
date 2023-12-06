@@ -201,6 +201,8 @@ int main(int argc, char *argv[]) {
                        header.stack_size);
         INFO("Switch ctx: [%llu] => [%llu]", (unsigned long long)old, (unsigned long long)current)
         wm_state.exit = 0;
+      } else {
+        INFO("no thread found... exit")
       }
     }
   }

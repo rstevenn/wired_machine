@@ -29,12 +29,12 @@ run :
 > ./build_wired_machine.bat
 
 ### Run Test:
-> ./bin/wiasm_to_bin.exe  ./test/test.wiasm \
+> ./bin/wiasm_to_wbin.exe  ./test/test.wiasm \
 > ./bin/wired_machine.exe ./out.wbin
 
 ### Run custom programm
 compile to wbin :
-> ./bin/wiasm_to_bin.exe < path to your .wiasm file > 
+> ./bin/wiasm_to_wbin.exe < path to your .wiasm file > 
 
 run :
 > ./bin/wired_machine.exe < path to the out.wbin file > 
