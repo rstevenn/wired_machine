@@ -10,18 +10,31 @@ This project provides an assembler and a VM/interpreter for a custom assembly-li
 # Quick start
 
 ## linux
-Build: 
+### Build: 
 > ./build.sh 
 
-Run:
+### Run Test:
 > ./run.sh
 
+### Run custom programm
+compile to wbin :
+> ./bin/wiasm_to_bin < path to your .wiasm file > 
+
+run :
+> ./bin/wired_machine < path to the out.wbin file > 
+
 ## windows
-Build:
+### Build:
 > ./build_wiasm.bat \
 > ./build_wired_machine.bat
 
-Run:
+### Run Test:
 > ./bin/wiasm_to_bin.exe  ./test/test.wiasm \
 > ./bin/wired_machine.exe ./out.wbin
 
+### Run custom programm
+compile to wbin :
+> ./bin/wiasm_to_bin.exe < path to your .wiasm file > 
+
+run :
+> ./bin/wired_machine.exe < path to the out.wbin file > 
