@@ -88,12 +88,12 @@ char *readAllFile(char *path) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %ldu chars", size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %llu chars", (unsigned long long)size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %ldu != got %ldu)",
-                   path, size, got);
+                   "unable to read the file %s (expected %llu != got %llu)",
+                   path, (unsigned long long)size, (unsigned long long)got);
   buffer[got] = '\0';
 
   // close file
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 
   // stack and ram size
   size_t ok;
-  ok = sscanf(rawText, "ram_size:%ldu\n", &(header.ram_size));
+  ok = sscanf(rawText, "ram_size:%llu\n", &(header.ram_size));
   if (!ok) {
     ERROR("Invalid ram size or ram size not privided")
   }
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
     ERROR("Stack not privided")
   }
 
-  ok = sscanf(next + 1, "stack_size:%ldu\n", &(header.stack_size));
+  ok = sscanf(next + 1, "stack_size:%llu\n", &(header.stack_size));
   if (!ok) {
     ERROR("Invalid stack size or ram size not privided")
   }

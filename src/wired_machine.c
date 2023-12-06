@@ -29,12 +29,12 @@ char *readAllFile(char *path, size_t *file_size_out) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %ldu chars", size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %llu chars", (unsigned long long)size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %ldu != got %ldu)",
-                   path, size, got);
+                   "unable to read the file %s (expected %llu != got %llu)",
+                   path, (unsigned long long)size, (unsigned long long) got);
   buffer[got] = '\0';
 
   // close file
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   size_t file_size;
   char *rawText = readAllFile(argv[1], &file_size);
   char *current = rawText;
-  INFO("LOAD: '%s' %ldu bits", argv[1], file_size)
+  INFO("LOAD: '%s' %llu bits", argv[1], (unsigned long long)file_size)
 
   // extract and sanitize header metadata
   if (file_size < sizeof(wired_vm_header_t))
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     ERROR("Entry point out of executable zone");
 
   // setup ram
-  INFO("init ram of %ldu bits and load program", header.ram_size);
+  INFO("init ram of %llu bits and load program", (unsigned long long)header.ram_size);
   char *vm_ram = (char *)malloc(header.ram_size * sizeof(char));
   if (vm_ram == NULL)
     ERROR("Can't allocate ram memory")
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     // fetch
-    INFO("IC: 0x%ldu fetch at pc: 0x%ldx", registers[IC], registers[PC])
+    INFO("IC: 0x%llu fetch at pc: 0x%llx", (unsigned long long)registers[IC], (unsigned long long)registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]) {
 
       ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
                      header.stack_size);
-      INFO("Switch ctx: [%ldu] => [%ldu]", old, current)
+      INFO("Switch ctx: [%llu] => [%llu]", (unsigned long long)old, (unsigned long long)current)
     }
   }
 
