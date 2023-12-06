@@ -5,16 +5,16 @@
 
 #include "wired.def.h"
 
-#include "th_process_ctx.h"
 #include "exec_instr.h"
+#include "th_process_ctx.h"
 #include "utils/base_log.h"
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
 #define TH_SWITCH 8
 
-//#undef INFO
-//#define INFO(...)
+// #undef INFO
+// #define INFO(...)
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -29,12 +29,13 @@ char *readAllFile(char *path, size_t *file_size_out) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars", (unsigned long)size)
+  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars",
+                 (unsigned long)size)
 
   size_t got;
   CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %lu != got %lu)",
-                   path, (unsigned long)size, (unsigned long) got);
+                   "unable to read the file %s (expected %lu != got %lu)", path,
+                   (unsigned long)size, (unsigned long)got);
   buffer[got] = '\0';
 
   // close file
@@ -110,7 +111,8 @@ int main(int argc, char *argv[]) {
 
   while (!wm_state.exit) {
     // fetch
-    INFO("IC: 0x%lu fetch at pc: 0x%lx", (unsigned long)registers[IC], (unsigned long)registers[PC])
+    INFO("IC: [%lu] fetch at pc: 0x%lx", (unsigned long)registers[IC],
+         (unsigned long)registers[PC])
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -148,12 +150,12 @@ int main(int argc, char *argv[]) {
     // decode && execute
     if (op.meta.op_code >= NB_INST)
       ERROR("Unknow op code 0x%04x", op.meta.op_code)
-    
+
     if (!exec_lst[op.meta.op_code].set)
       ERROR("op 0x%04x not implemented", op.meta.op_code)
 
-    exec_lst[op.meta.op_code].run(&op, vm_ram, registers, &header,
-                                  SANITYZE_MEM, SANITIZE_MATH, &ctx, &wm_state);
+    exec_lst[op.meta.op_code].run(&op, vm_ram, registers, &header, SANITYZE_MEM,
+                                  SANITIZE_MATH, &ctx, &wm_state);
 
     // clock
     registers[IC]++;
@@ -178,21 +180,22 @@ int main(int argc, char *argv[]) {
         ERROR("Invalide op size '%u'", op.meta.op_size)
       }
     }
-    
+
     // multi thread
-    
-    if (wm_state.exit)
+
+    if (wm_state.exit) {
+      ERROR("Stop thread %ul", (unsigned int *)threads->current)
       threads->ths[threads->current].active = 0;
-    
-    if (registers[IC] % TH_SWITCH == 0 ||
-        wm_state.exit) {
+    }
+
+    if (registers[IC] % TH_SWITCH == 0 || wm_state.exit) {
       // find next
       uint64_t old = threads->current;
       uint64_t current = old;
 
       do {
         current++;
-        
+
         if (current > threads->nb_ths - 1)
           current = 0;
       } while (!threads->ths[current].active && current != old);
@@ -200,16 +203,17 @@ int main(int argc, char *argv[]) {
       if (current != old) {
         ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
                        header.stack_size);
-        INFO("Switch ctx: [%lu] => [%lu]", (unsigned long)old, (unsigned long)current)
+        INFO("Switch ctx: [%lu] => [%lu]", (unsigned long)old,
+             (unsigned long)current)
         wm_state.exit = 0;
       } else {
         INFO("no thread found... exit")
       }
     }
   }
-  
+
   INFO("exit with code %lu", (unsigned long)registers[RT])
-  
+
   // clear
   free(vm_ram);
   free(rawText);
