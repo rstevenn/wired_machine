@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "wired.def.h"
 
@@ -15,6 +16,14 @@
 
 // #undef INFO
 // #define INFO(...)
+
+void dump_registers(uint64_t* regs) {
+  printf("Regs:\n");
+  for (size_t i=0; i<REGISTERS_NB; i++) {
+    printf("[%lu] : %" PRIu64 "\n", (unsigned long)i, regs[i]);
+  }
+  printf("\n");
+}
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
@@ -113,6 +122,7 @@ int main(int argc, char *argv[]) {
     // fetch
     INFO("IC: [%lu] fetch at pc: 0x%lx", (unsigned long)registers[IC],
          (unsigned long)registers[PC])
+    
     char *pc = vm_ram + registers[PC];
     op_meta_t op_meta = *(op_meta_t *)pc;
     vm_op_t op = {0};
@@ -184,7 +194,7 @@ int main(int argc, char *argv[]) {
     // multi thread
 
     if (wm_state.exit) {
-      ERROR("Stop thread %lu", (unsigned long)threads->current)
+      INFO("Stop thread %lu", (unsigned long)threads->current)
       threads->ths[threads->current].active = 0;
     }
 
@@ -207,9 +217,10 @@ int main(int argc, char *argv[]) {
              (unsigned long)current)
         wm_state.exit = 0;
       } else {
-        INFO("no thread found... exit")
+        INFO("no other thread found")
       }
     }
+    dump_registers(registers);
   }
 
   INFO("exit with code %lu", (unsigned long)registers[RT])

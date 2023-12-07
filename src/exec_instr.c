@@ -366,9 +366,10 @@ void exec_jeqi(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *
 
 void exec_jne(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math, ctx_t* ctx, wm_state_t* wm_state) {
   INFO("JNE")
-  if (registers[EQ]) 
+  if (registers[EQ]){ 
     wm_state->pc_set = 0;
-
+    return;
+  }
   uint64_t addr = registers[op->args[0]];
   if (sanityse_mem) {
     if (addr < 0 || addr > header->ram_size - 1)
@@ -380,9 +381,10 @@ void exec_jne(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *h
 
 void exec_jnei(vm_op_t *op, char *vram, uint64_t *registers, wired_vm_header_t *header, char sanityse_mem, char sanityse_math, ctx_t* ctx, wm_state_t* wm_state) {
   INFO("JNEI")
-  if (registers[EQ]) 
+  if (registers[EQ]){ 
     wm_state->pc_set = 0;
-
+    return;
+  }
   uint64_t addr = op->args[0];
   if (sanityse_mem){
     if (addr < 0 || addr > header->ram_size - 1)

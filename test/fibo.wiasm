@@ -15,23 +15,22 @@ fib_loop:
     add rd ra rb
 
     # Save the next number in register ra
-    save ra rb
+    load ra rb
 
     # Save the current number in register rb
-    save rb ra
+    load rb rd
 
     # Increment the counter
     addi rc rc 1
 
     # Check if the counter reached the limit of the sequence
-    lti rc 40
+    gti rc 5
 
     # Jump back to the loop if the counter is less than the limit
     jnei fib_loop
 
 # Print the final number in the sequence
-load ra rb
-# loadi rd 1
+load rt rd
 scall 1
 
 # Exit the program
