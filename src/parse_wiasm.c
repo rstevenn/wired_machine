@@ -5,7 +5,7 @@ void parse_scall_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id > 0)
         ERROR("Too much args for a scall instr")
 
-    op->args.arg_64.arg0 = buffer_to_nb(buffer);
+    op->args.arg_64.arg0 = buffer_to_uint64(buffer);
 }
 
 void parse_load_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -25,7 +25,7 @@ void parse_loadi_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id == 0) 
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1) 
-         op->args.arg_128.arg1 = buffer_to_nb(buffer);
+         op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_loada_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -35,7 +35,7 @@ void parse_loada_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id == 0) 
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1) 
-         op->args.arg_128.arg1 = buffer_to_hexnb(buffer);
+         op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_save_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -55,7 +55,7 @@ void parse_savei_arg(char* buffer, unsigned int id, operation_t* op) {
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_savea_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -63,7 +63,7 @@ void parse_savea_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a SAVEA instr")
 
     if (id == 0)
-        op->args.arg_128.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_128.arg0 = buffer_to_uint64(buffer);
     if (id==1)
         op->args.arg_128.arg1 = buffer_to_register(buffer);
 }
@@ -73,9 +73,9 @@ void parse_saveai_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a SAVEA instr")
 
     if (id == 0)
-        op->args.arg_128.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_128.arg0 = buffer_to_uint64(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_add_arg(char* buffer, unsigned int id, operation_t* op){
@@ -99,7 +99,7 @@ void parse_addi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_min_arg(char* buffer, unsigned int id, operation_t* op){
@@ -123,7 +123,7 @@ void parse_mini_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_mult_arg(char* buffer, unsigned int id, operation_t* op){
@@ -147,7 +147,7 @@ void parse_multi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_div_arg(char* buffer, unsigned int id, operation_t* op){
@@ -171,7 +171,7 @@ void parse_divi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_and_arg(char* buffer, unsigned int id, operation_t* op){
@@ -195,7 +195,7 @@ void parse_andi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_or_arg(char* buffer, unsigned int id, operation_t* op){
@@ -219,7 +219,7 @@ void parse_ori_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_xor_arg(char* buffer, unsigned int id, operation_t* op){
@@ -243,7 +243,7 @@ void parse_xori_arg(char* buffer, unsigned int id, operation_t* op){
     if (id==1)
         op->args.arg_192.arg1 = buffer_to_register(buffer);
     if (id==2)
-        op->args.arg_192.arg2 = buffer_to_nb(buffer);
+        op->args.arg_192.arg2 = buffer_to_uint64(buffer);
 }
 
 void parse_not_arg(char* buffer, unsigned int id, operation_t* op){
@@ -263,7 +263,7 @@ void parse_noti_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_eq_arg(char* buffer, unsigned int id, operation_t* op){
@@ -283,7 +283,7 @@ void parse_eqi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_neq_arg(char* buffer, unsigned int id, operation_t* op){
@@ -303,7 +303,7 @@ void parse_neqi_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_gt_arg(char* buffer, unsigned int id, operation_t* op){
@@ -323,7 +323,7 @@ void parse_gti_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_gte_arg(char* buffer, unsigned int id, operation_t* op){
@@ -343,7 +343,7 @@ void parse_gtei_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_lt_arg(char* buffer, unsigned int id, operation_t* op){
@@ -363,7 +363,7 @@ void parse_lti_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_lte_arg(char* buffer, unsigned int id, operation_t* op){
@@ -383,7 +383,7 @@ void parse_ltei_arg(char* buffer, unsigned int id, operation_t* op){
     if (id == 0)
         op->args.arg_128.arg0 = buffer_to_register(buffer);
     if (id==1)
-        op->args.arg_128.arg1 = buffer_to_nb(buffer);
+        op->args.arg_128.arg1 = buffer_to_uint64(buffer);
 }
 
 void parse_jre_arg(char* buffer, unsigned int id, operation_t* op) {
@@ -398,7 +398,7 @@ void parse_jrei_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a JREI instr")
 
     if (is_hexnb(buffer)) {
-        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_64.arg0 = buffer_to_uint64(buffer);
     } else {
         if (strcpy(op->args.flag, buffer) == NULL) 
             ERROR("Can't copy flag")
@@ -419,7 +419,7 @@ void parse_jeqi_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a JEQI instr")
 
     if (is_hexnb(buffer)) {
-        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_64.arg0 = buffer_to_uint64(buffer);
     } else {
         if (strcpy(op->args.flag, buffer) == NULL) 
             ERROR("Can't copy flag")
@@ -440,7 +440,7 @@ void parse_jnei_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a JENI instr")
 
     if (is_hexnb(buffer)) {
-        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_64.arg0 = buffer_to_uint64(buffer);
     } else {
         if (strcpy(op->args.flag, buffer) == NULL) 
             ERROR("Can't copy flag")
@@ -461,7 +461,7 @@ void parse_jmpi_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a JMPI instr")
 
     if (is_hexnb(buffer)) {
-        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_64.arg0 = buffer_to_uint64(buffer);
     } else {
         if (strcpy(op->args.flag, buffer) == NULL) 
             ERROR("Can't copy flag")
@@ -482,7 +482,7 @@ void parse_jmp_thi_arg(char* buffer, unsigned int id, operation_t* op) {
         ERROR("Too much args for a JMP THI instr")
 
     if (is_hexnb(buffer)) {
-        op->args.arg_64.arg0 = buffer_to_hexnb(buffer);
+        op->args.arg_64.arg0 = buffer_to_uint64(buffer);
     } else {
         if (strcpy(op->args.flag, buffer) == NULL) 
             ERROR("Can't copy flag")
@@ -932,8 +932,12 @@ registry_t buffer_to_register(char* buffer){
     ERROR("Unkown register %s", buffer)
 }
 
-unsigned int buffer_to_nb(char* buffer) {
-    unsigned int nb = 0;
+unsigned long long buffer_to_uint64(char* buffer) {
+    if (is_hexnb(buffer)) {
+
+    }
+
+    unsigned long long nb = 0;
     for (char* current=buffer; (*current) != '\0'; current++) {
         if (*current < '0' || *current > '9') 
             ERROR("Can't parse nb %s", buffer)
@@ -945,8 +949,8 @@ unsigned int buffer_to_nb(char* buffer) {
     return nb;
 }
 
-unsigned int buffer_to_hexnb(char* buffer) {
-    unsigned int nb = 0;
+unsigned long long buffer_to_hexnb(char* buffer) {
+    unsigned long long nb = 0;
     
     if(*buffer != '0' || *(buffer+1) != 'x') {
         ERROR("can't parsse buffer as hex '%s'", buffer)

@@ -104,4 +104,4 @@ $rh
 1 : exit with exitcode store in $rt
 
 // comments
-start with #
+start with #.

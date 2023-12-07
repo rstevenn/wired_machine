@@ -74,8 +74,8 @@ void insert_instruction(program_t* pgm, operation_t op);
 size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, raw_instr_type raw_instr_type);
 
 registry_t buffer_to_register(char* buffer);
-unsigned int buffer_to_nb(char* buffer);
-unsigned int buffer_to_hexnb(char* buffer);
+unsigned long long buffer_to_uint64(char* buffer);
+unsigned long long buffer_to_hexnb(char* buffer);
 int is_hexnb(char* buffer);
 
 #endif
