@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     // multi thread
 
     if (wm_state.exit) {
-      ERROR("Stop thread %ul", (unsigned int *)threads->current)
+      ERROR("Stop thread %lu", (unsigned long)threads->current)
       threads->ths[threads->current].active = 0;
     }
 

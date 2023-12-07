@@ -164,6 +164,20 @@ int main(int argc, char *argv[]) {
 
     switch (*current) {
 
+    // comments
+    case '#':
+      while (*current != '\0' && *current != '\n')
+        current++;
+
+      if (*current == '\0')
+        current--;
+
+      buffer_current = buffer_base;
+      in_instruction = 0;
+      nb_args = 0;
+
+      break;
+
     // split chars
     case ' ':
     case '\t':

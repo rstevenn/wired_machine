@@ -1,0 +1,40 @@
+ram_size:  640000
+stack_size:40000
+
+ENTRY:
+# Store 0 and 1 in registers ra and rb
+loadi ra 0
+loadi rb 1
+
+# Initialize a counter in register rc
+loadi rc 0
+
+# Generate the fibonacci sequence
+fib_loop:
+    # Calculate the next number in the sequence
+    add rd ra rb
+
+    # Save the next number in register ra
+    save ra rb
+
+    # Save the current number in register rb
+    save rb ra
+
+    # Increment the counter
+    addi rc rc 1
+
+    # Check if the counter reached the limit of the sequence
+    lti rc 40
+
+    # Jump back to the loop if the counter is less than the limit
+    jnei fib_loop
+
+# Print the final number in the sequence
+load ra rb
+# loadi rd 1
+scall 1
+
+# Exit the program
+loadi ra 1
+loadi rd 0
+scall 1

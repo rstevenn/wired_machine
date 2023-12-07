@@ -1,6 +1,5 @@
 // byte code that will be used in the wired_vm interpretor
 
-
 // Header
 typedef struct {
     uint8_t   identificator[5]; // "WIRED"
@@ -104,3 +103,5 @@ $rh
 0 : no operation
 1 : exit with exitcode store in $rt
 
+// comments
+start with #
