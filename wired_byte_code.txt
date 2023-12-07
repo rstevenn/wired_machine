@@ -1,5 +1,17 @@
 // byte code that will be used in the wired_vm interpretor
 
+
+1) header off type
+ram_size:  640000
+stack_size:40000
+
+// code struct [NOT IMPLEMENTED YET]
+2) a mix of .data and .code sections 
+.code contrian code like the one show under
+
+.data section containing data of multiple types
+
+
 // Header
 typedef struct {
     uint8_t   identificator[5]; // "WIRED"

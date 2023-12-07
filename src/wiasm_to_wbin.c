@@ -178,6 +178,7 @@ int main(int argc, char *argv[]) {
 
       break;
 
+
     // split chars
     case ' ':
     case '\t':

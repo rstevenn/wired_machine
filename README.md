@@ -7,6 +7,9 @@ This project provides an assembler and a VM/interpreter for a custom assembly-li
 * Files ending in **.wiasm** contain assembly-like code.
 * Files enfing in **.wbin**  contain the assembled binary code.
 
+# Dependency 
+* gcc
+
 # Quick start
 
 ## linux
@@ -38,3 +41,9 @@ compile to wbin :
 
 run :
 > ./bin/wired_machine.exe < path to the out.wbin file > 
+
+# TODO
+* [ ] check for memory leaks
+* [ ] use https://github.com/rstevenn/ccbase for logging
+* [ ]  implement a string view library to improce parssing
+* [ ] implement .code and .data sections
