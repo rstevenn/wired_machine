@@ -81,7 +81,7 @@ void table_add_label(char label[64]) {
     CCB_INFO("Collison")
 
     if (strcmp(current_instance->label, label) == 0 && current_instance->used) 
-        return;
+        CCB_ERROR("duplicate label")
 
     if (strcmp(current_instance->label, label) != 0 && current_instance->used) {
         
@@ -89,7 +89,7 @@ void table_add_label(char label[64]) {
             
             current_instance = current_instance->next;
             if (strcmp(current_instance->label, label) == 0 && current_instance->used) {
-                return;
+                CCB_ERROR("duplicate label")
             
             } else if (!current_instance->used) {
                 current_instance->next = NULL;
