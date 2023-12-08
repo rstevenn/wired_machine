@@ -72,6 +72,7 @@ size_t parse_instruction(char* buffer, program_t* pgm);
 // helpers
 void insert_instruction(program_t* pgm, operation_t op);
 size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, raw_instr_type raw_instr_type);
+void free_pgm(program_t* pgm);
 
 registry_t buffer_to_register(char* buffer);
 unsigned long long buffer_to_uint64(char* buffer);

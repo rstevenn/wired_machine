@@ -65,3 +65,9 @@ void ths_switch_ctx(uint64_t th_id, registry_t *hr,
   threads_ctx->current = th_id;
 }
 
+void free_ths() {
+    for (size_t i=0; i<threads_ctx->nb_ths; i++)
+        free(threads_ctx->ths[i].stack);
+    free(threads_ctx->ths);
+    free(threads_ctx);
+}

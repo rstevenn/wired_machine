@@ -879,6 +879,10 @@ void insert_instruction(program_t* pgm, operation_t op) {
     pgm->len++;
 }
 
+void free_pgm(program_t* pgm) {
+    free(pgm->operations);
+}
+
 size_t new_instruction(program_t* pgm, instruction_t type, parse_args_t* fnc, raw_instr_type raw_instr_type) {
     operation_t op;
     op.type = type;
@@ -934,7 +938,7 @@ registry_t buffer_to_register(char* buffer){
 
 unsigned long long buffer_to_uint64(char* buffer) {
     if (is_hexnb(buffer)) {
-
+        return buffer_to_hexnb(buffer);
     }
 
     unsigned long long nb = 0;

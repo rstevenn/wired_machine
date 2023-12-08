@@ -226,6 +226,7 @@ int main(int argc, char *argv[]) {
   INFO("exit with code %lu", (unsigned long)registers[RT])
 
   // clear
+  free_ths(); 
   free(vm_ram);
   free(rawText);
   INFO("END")

@@ -43,7 +43,7 @@ run :
 > ./bin/wired_machine.exe < path to the out.wbin file > 
 
 # TODO
-* [ ] check for memory leaks
+* [v] check for memory leaks
 * [ ] use https://github.com/rstevenn/ccbase for logging
 * [ ]  implement a string view library to improce parssing
 * [ ] implement .code and .data sections

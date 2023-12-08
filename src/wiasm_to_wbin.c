@@ -278,6 +278,10 @@ int main(int argc, char *argv[]) {
       ERROR("can't wriet instructions")
   }
 
+  // free resources
+  free_hashmap(); 
+  free_pgm(&program);  
+  free(rawText);
   fclose(fp);
 
   INFO("ENDED")

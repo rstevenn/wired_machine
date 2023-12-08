@@ -124,5 +124,17 @@ void table_add_adrr(char label[64], long adrr) {
     element->addr = adrr;
 }
 
+void free_hashmap(void) {
+    for (size_t i=0; i<HASHMAP_SIZE; i++) {
+        hash_map_t* element = &hash_map[i];
+        hash_map_t* current = element->next;
+        while (current != NULL) {
+            element = current;
+            current = element->next;
+            free(element);
+        }
+    }
+}
+
 #endif
 #endif

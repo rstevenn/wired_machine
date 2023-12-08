@@ -33,5 +33,6 @@ typedef struct {
 ths_t* init_ths();
 void ths_add_ctx(uint64_t stack_size, uint64_t pc, uint64_t sp, uint64_t spl);
 void ths_switch_ctx(uint64_t th_id, registry_t *hr, char *stack_base, size_t stack_size);
+void free_ths();
 
 #endif
