@@ -1,8 +1,6 @@
 #ifndef __CCB_VS_H__
 #define __CCB_VS_H__
 
-#include <cstddef>
-#include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,6 +27,11 @@ typedef struct {
     size_t len;
 } ccb_vs;
 
+typedef struct {
+    const ccb_vs front;
+    const ccb_vs back;
+} ccb_split;
+
 // convert
 const ccb_vs ccb_cst2vst(const char* string); // cstring to vstring
 const char* ccb_vst2cst(const ccb_vs vstring); // vstring to cstring !! allocate mem
@@ -39,13 +42,23 @@ int ccb_vs_head(const ccb_vs string, const ccb_vs head);
 int ccb_vs_tail(const ccb_vs string, const ccb_vs tail);
 int ccb_vs_in(const ccb_vs string, const ccb_vs sub_string);
 
+// split
+ccb_split ccb_vs_split_char(const ccb_vs string, char split_ch); // split on the 1st instance of char c
+ccb_split ccb_vs_split_chars(const ccb_vs string, const char* split_ch, size_t nb_chs); // split on any char contain on split_ch
+
 #define __CCB_VS_IMP__
 #ifdef __CCB_VS_IMP__
 
+// split
+ccb_split ccb_vs_split_char(const ccb_vs string, char split_ch) {
+    
+}
+
+// convert
 const ccb_vs ccb_cst2vst(const char* string) {
     // find size
     size_t size;
-    for (size=0; *string!='\0'; size++);
+    for (size=0; string[size]!='\0'; size++);
 
     // build struct
     return (const ccb_vs){.ptr=string, .len=size};
@@ -63,11 +76,12 @@ const char* ccb_vst2cst(const ccb_vs vstring) {
     return (const char*) string;
 }
 
+// compare
 int ccb_vs_eq(const ccb_vs a, const ccb_vs b) {
     if (a.len != b.len) return 0;
 
     for(size_t i=0; i<a.len; i++){
-        if (a.ptr[i] == b.ptr[i]) return 0;
+        if (a.ptr[i] != b.ptr[i]) return 0;
     }
     return 1;
 }
@@ -76,7 +90,7 @@ int ccb_vs_head(const ccb_vs string, const ccb_vs head) {
     if (string.len < head.len) return 0;
 
     for(size_t i=0; i<head.len; i++){
-        if (string.ptr[i] == head.ptr[i]) return 0;
+        if (string.ptr[i] != head.ptr[i]) return 0;
     }
     return 1;
 }
@@ -85,7 +99,7 @@ int ccb_vs_tail(const ccb_vs string, const ccb_vs tail) {
     if (string.len < tail.len) return 0;
 
     for(size_t i=0; i<tail.len; i++){
-        if (string.ptr[string.len-i-1] == tail.ptr[tail.len-i-1]) return 0;
+        if (string.ptr[string.len-i-1] != tail.ptr[tail.len-i-1]) return 0;
     }
     return 1;
 }
@@ -93,7 +107,7 @@ int ccb_vs_tail(const ccb_vs string, const ccb_vs tail) {
 int ccb_vs_in(const ccb_vs string, const ccb_vs sub_string) {
     if (string.len < sub_string.len) return 0;
 
-    for(size_t i=0; i<string.len-sub_string.len; i++){
+    for(size_t i=0; i<string.len-(sub_string.len-1); i++){
         char found = 1;
         for (size_t j=0; j<sub_string.len; j++) {
             if (string.ptr[i+j] != sub_string.ptr[j]){
@@ -101,7 +115,6 @@ int ccb_vs_in(const ccb_vs string, const ccb_vs sub_string) {
                 break;
             }
         }
-
         if (found)
             return 1;
     }
