@@ -18,8 +18,8 @@
 /* formats utils
     usage: printf("text" CCB_VS_MT "text", CCB_VS_ARG(<ccb_vs variable>));
 */
-#define CCB_VS_MT "%.*s"
-#define CCB_VS_ARG(vs) vs.ptr, vs.len 
+#define CCB_VS_FMT "%.*s"
+#define CCB_VS_ARG(vs) (int)vs.len, vs.ptr
 
 // struct 
 typedef struct {
@@ -30,7 +30,8 @@ typedef struct {
 typedef struct {
     const ccb_vs front;
     const ccb_vs back;
-} ccb_split;
+    char found;
+} ccb_vs_split;
 
 // convert
 const ccb_vs ccb_cst2vst(const char* string); // cstring to vstring
@@ -43,15 +44,50 @@ int ccb_vs_tail(const ccb_vs string, const ccb_vs tail);
 int ccb_vs_in(const ccb_vs string, const ccb_vs sub_string);
 
 // split
-ccb_split ccb_vs_split_char(const ccb_vs string, char split_ch); // split on the 1st instance of char c
-ccb_split ccb_vs_split_chars(const ccb_vs string, const char* split_ch, size_t nb_chs); // split on any char contain on split_ch
+ccb_vs_split ccb_vs_split_char(const ccb_vs string, char split_ch); // split on the 1st instance of char c
+ccb_vs_split ccb_vs_split_set(const ccb_vs string, const char* split_ch, size_t nb_chs); // split on any char contain on split_ch
+ccb_vs_split ccb_vs_split_string(const ccb_vs string, const ccb_vs split_string); // split on the 1st instance of string
 
 #define __CCB_VS_IMP__
 #ifdef __CCB_VS_IMP__
 
 // split
-ccb_split ccb_vs_split_char(const ccb_vs string, char split_ch) {
-    
+ccb_vs_split ccb_vs_split_char(const ccb_vs string, char split_ch) {
+    for (size_t i=0; i<string.len; i++) {
+        if (string.ptr[i] == split_ch) {
+            return (ccb_vs_split) { .front = (const ccb_vs){.ptr=string.ptr, .len=i},
+                                    .back  = (const ccb_vs){.ptr=&string.ptr[i+1], .len=(string.len-i-1)},
+                                    .found = 1};
+        }
+    }
+    ccb_vs_split split = {.found=0};
+    return split;
+}
+
+ccb_vs_split ccb_vs_split_set(const ccb_vs string, const char* split_ch, size_t nb_chs) {
+    for (size_t i=0; i<string.len; i++) {
+        if (ccb_vs_in((const ccb_vs){.ptr=split_ch, .len=nb_chs},
+                      (const ccb_vs){.ptr=&string.ptr[i], .len=1})) {
+            return (ccb_vs_split) { .front = (const ccb_vs){.ptr=string.ptr, .len=i},
+                                    .back  = (const ccb_vs){.ptr=&string.ptr[i+1], .len=(string.len-i-1)},
+                                    .found = 1};
+        }
+    }
+    ccb_vs_split split = {.found=0};
+    return split;
+}
+
+ccb_vs_split ccb_vs_split_string(const ccb_vs string, const ccb_vs split_string) {
+    for (size_t i=0; i<string.len; i++) {
+        if (ccb_vs_head((const ccb_vs){.ptr=&string.ptr[i], .len=(string.len-i)}, split_string)){
+            return (ccb_vs_split) { .front = (const ccb_vs){.ptr=string.ptr, .len=i},
+                                    .back  = (const ccb_vs){.ptr=&string.ptr[i+split_string.len], 
+                                                            .len=(string.len-i-split_string.len)},
+                                    .found = 1};
+        }
+    }
+    ccb_vs_split split = {.found=0};
+    return split;
 }
 
 // convert
