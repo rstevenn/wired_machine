@@ -1,6 +1,9 @@
 # editor 
 .vscode/
 
+# log
+*.log
+
 # Prerequisites
 *.d
 

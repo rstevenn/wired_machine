@@ -1,1 +1,1 @@
-gcc src/wiasm_to_wbin.c src/parse_wiasm.c -o bin/wiasm_to_wbin.exe
+gcc src/wiasm_to_wbin.c src/parse_wiasm.c src/ccbase/logs/log.c -o bin/wiasm_to_wbin.exe

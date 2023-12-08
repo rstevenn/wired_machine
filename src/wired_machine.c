@@ -6,29 +6,30 @@
 
 #include "wired.def.h"
 
+#include "ccbase/logs/log.h"
 #include "exec_instr.h"
 #include "th_process_ctx.h"
-#include "utils/base_log.h"
+
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
 #define TH_SWITCH 8
 
 // #undef INFO
-// #define INFO(...)
+// #define CCB_INFO(...)
 
 void dump_registers(uint64_t* regs) {
-  printf("Regs:\n");
+  CCB_INFO("Regs:");
   for (size_t i=0; i<REGISTERS_NB; i++) {
-    printf("[%lu] : %" PRIu64 "\n", (unsigned long)i, regs[i]);
+    CCB_INFO("[%lu] : %" PRIu64 , (unsigned long)i, regs[i])
   }
-  printf("\n");
+  CCB_INFO(" ")
 }
 
 char *readAllFile(char *path, size_t *file_size_out) {
   // open file
   FILE *fp = fopen(path, "rb");
-  CHECK_ALLOCATE(fp, "Can't read the file %s", path);
+  CCB_CHECK(fp != NULL, "Can't read the file %s", path)
 
   // get file size
   fseek(fp, 0, SEEK_END);
@@ -38,12 +39,11 @@ char *readAllFile(char *path, size_t *file_size_out) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars",
-                 (unsigned long)size)
+  CCB_CHECK(buffer != NULL, "Unable to allocate a buffer of %lu chars",
+            (unsigned long)size)
 
-  size_t got;
-  CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %lu != got %lu)", path,
+  size_t got = got = fread(buffer, sizeof(char), size, fp);
+  CCB_CHECK(size == got, "unable to read the file %s (expected %lu != got %lu)", path,
                    (unsigned long)size, (unsigned long)got);
   buffer[got] = '\0';
 
@@ -54,64 +54,66 @@ char *readAllFile(char *path, size_t *file_size_out) {
 }
 
 int main(int argc, char *argv[]) {
+  // init log
+  ccb_InitLog("wired_machine.log");  
 
   // check args
   if (argc <= 1)
-    ERROR("No file pass as arg")
+    CCB_ERROR("No file pass as arg")
 
   // read file
   size_t file_size;
   char *rawText = readAllFile(argv[1], &file_size);
   char *current = rawText;
-  INFO("LOAD: '%s' %lu bits", argv[1], (unsigned long)file_size)
+  CCB_INFO("LOAD: '%s' %lu bits", argv[1], (unsigned long)file_size)
 
   // extract and sanitize header metadata
   if (file_size < sizeof(wired_vm_header_t))
-    ERROR("the file is to short to contain a header")
+    CCB_ERROR("the file is to short to contain a header")
 
   wired_vm_header_t header = *(wired_vm_header_t *)current;
   current += sizeof(header);
   size_t pgm_size = file_size - (current - rawText);
 
   if (strcmp("WIRE", (const char *)header.identificator) != 0)
-    ERROR("Invalid indentificator")
+    CCB_ERROR("Invalid indentificator")
 
   if (header.ram_size < pgm_size + header.stack_size)
-    ERROR("Not enough ram allocated")
+    CCB_ERROR("Not enough ram allocated")
 
   if (header.entry_point > pgm_size)
-    ERROR("Entry point out of executable zone");
+    CCB_ERROR("Entry point out of executable zone");
 
   // setup ram
-  INFO("init ram of %lu bits and load program", (unsigned long)header.ram_size);
+  CCB_INFO("init ram of %lu bits and load program", (unsigned long)header.ram_size);
   char *vm_ram = (char *)malloc(header.ram_size * sizeof(char));
   if (vm_ram == NULL)
-    ERROR("Can't allocate ram memory")
+    CCB_ERROR("Can't allocate ram memory")
 
   if (memcpy(vm_ram, current, pgm_size * sizeof(char)) == NULL)
-    ERROR("Can't copy program on ram")
+    CCB_ERROR("Can't copy program on ram")
 
   // setup registers
-  INFO("setup registers")
+  CCB_INFO("setup registers")
   uint64_t registers[REGISTERS_NB] = {0};
   registers[SPL] = header.ram_size - 1;
   registers[SP] = header.ram_size - 1 - header.stack_size;
   registers[PC] = header.entry_point;
 
   // setup ctx
-  INFO("setup context")
+  CCB_INFO("setup context")
   ctx_t ctx;
   ctx.stack_base = &vm_ram[registers[SP]];
   ctx.sp = registers[SP];
   ctx.spl = registers[SPL];
 
   // setup threads
-  INFO("setup threads")
+  CCB_INFO("setup threads")
   ths_t *threads = init_ths();
   ths_add_ctx(header.stack_size, registers[PC], ctx.sp, ctx.spl);
 
   // run
-  INFO("Launch programm")
+  CCB_INFO("Launch programm")
   const exec_t *exec_lst = init_exec_list();
 
   wm_state_t wm_state = {0};
@@ -120,7 +122,7 @@ int main(int argc, char *argv[]) {
 
   while (!wm_state.exit) {
     // fetch
-    INFO("IC: [%lu] fetch at pc: 0x%lx", (unsigned long)registers[IC],
+    CCB_INFO("IC: [%lu] fetch at pc: 0x%lx", (unsigned long)registers[IC],
          (unsigned long)registers[PC])
     
     char *pc = vm_ram + registers[PC];
@@ -130,14 +132,14 @@ int main(int argc, char *argv[]) {
 
     switch (op_meta.op_size) {
     case (inst_128): {
-      INFO("op_size: 128 bits")
+      CCB_INFO("op_size: 128 bits")
       op.meta = op_meta;
       op.args[0] = *(uint64_t *)(pc + sizeof(op_meta));
       break;
     }
 
     case (inst_192): {
-      INFO("op_size: 192 bits")
+      CCB_INFO("op_size: 192 bits")
       op.meta = op_meta;
       op.args[0] = *(uint64_t *)(pc + sizeof(op_meta));
       op.args[1] = *(uint64_t *)(pc + sizeof(op_meta) + sizeof(uint64_t));
@@ -145,7 +147,7 @@ int main(int argc, char *argv[]) {
     }
 
     case (inst_256): {
-      INFO("op_size: 256 bits")
+      CCB_INFO("op_size: 256 bits")
       op.meta = op_meta;
       op.args[0] = *(uint64_t *)(pc + sizeof(op_meta));
       op.args[1] = *(uint64_t *)(pc + sizeof(op_meta) + sizeof(uint64_t));
@@ -154,15 +156,15 @@ int main(int argc, char *argv[]) {
     }
 
     default:
-      ERROR("Invalide op size '%lu'", (unsigned long)op.meta.op_size)
+      CCB_ERROR("Invalide op size '%lu'", (unsigned long)op.meta.op_size)
     }
 
     // decode && execute
     if (op.meta.op_code >= NB_INST)
-      ERROR("Unknow op code 0x%04x", op.meta.op_code)
+      CCB_ERROR("Unknow op code 0x%04x", op.meta.op_code)
 
     if (!exec_lst[op.meta.op_code].set)
-      ERROR("op 0x%04x not implemented", op.meta.op_code)
+      CCB_ERROR("op 0x%04x not implemented", op.meta.op_code)
 
     exec_lst[op.meta.op_code].run(&op, vm_ram, registers, &header, SANITYZE_MEM,
                                   SANITIZE_MATH, &ctx, &wm_state);
@@ -187,14 +189,14 @@ int main(int argc, char *argv[]) {
       }
 
       default:
-        ERROR("Invalide op size '%u'", op.meta.op_size)
+        CCB_ERROR("Invalide op size '%u'", op.meta.op_size)
       }
     }
 
     // multi thread
 
     if (wm_state.exit) {
-      INFO("Stop thread %lu", (unsigned long)threads->current)
+      CCB_INFO("Stop thread %lu", (unsigned long)threads->current)
       threads->ths[threads->current].active = 0;
     }
 
@@ -213,22 +215,24 @@ int main(int argc, char *argv[]) {
       if (current != old) {
         ths_switch_ctx(current, (registry_t *)registers, ctx.stack_base,
                        header.stack_size);
-        INFO("Switch ctx: [%lu] => [%lu]", (unsigned long)old,
+        CCB_INFO("Switch ctx: [%lu] => [%lu]", (unsigned long)old,
              (unsigned long)current)
         wm_state.exit = 0;
       } else {
-        INFO("no other thread found")
+        CCB_INFO("no other thread found")
       }
     }
     dump_registers(registers);
   }
 
-  INFO("exit with code %lu", (unsigned long)registers[RT])
+  CCB_INFO("exit with code %lu", (unsigned long)registers[RT])
 
   // clear
   free_ths(); 
   free(vm_ram);
   free(rawText);
-  INFO("END")
+  CCB_INFO("END")
+
+  ccb_CloseLogFile();
   return registers[RT];
 }

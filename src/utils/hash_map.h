@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../wired.def.h"
+#include "../ccbase/logs/log.h"
 
-#include "base_log.h"
 typedef struct _hash_map {
     char label[64];
     long long addr;
@@ -73,11 +74,11 @@ void table_add_label(char label[64]) {
         current_instance->used = 1;
         
         if (strcpy(current_instance->label, label) == NULL)
-            ERROR("can't copy the label")
+            CCB_ERROR("can't copy the label")
         
         return;
     }
-    INFO("Collison")
+    CCB_INFO("Collison")
 
     if (strcmp(current_instance->label, label) == 0 && current_instance->used) 
         return;
@@ -96,7 +97,7 @@ void table_add_label(char label[64]) {
                 current_instance->used = 1;
         
                 if (strcpy(current_instance->label, label) == NULL) 
-                    ERROR("can't copy the label")
+                    CCB_ERROR("can't copy the label")
                     
                 return;
             }
@@ -105,21 +106,21 @@ void table_add_label(char label[64]) {
     
     current_instance->next = (hash_map_t*)malloc(sizeof(hash_map_t));
     if (current_instance->next == NULL) 
-        ERROR("Can't allocate memory for a new hashmap")
+        CCB_ERROR("Can't allocate memory for a new hashmap")
 
     current_instance->next->next = NULL;
     current_instance->next->addr = 0;
     current_instance->next->used = 1;
         
     if (strcpy(current_instance->next->label, label) == NULL) 
-        ERROR("can't copy the label")
+        CCB_ERROR("can't copy the label")
 }
 
 void table_add_adrr(char label[64], long adrr) {
 
     hash_map_t* element = find_hash_label(label);
     if (label== NULL)
-        ERROR("can't find the lable: '%s'", label)
+        CCB_ERROR("can't find the lable: '%s'", label)
 
     element->addr = adrr;
 }

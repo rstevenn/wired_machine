@@ -3,12 +3,12 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define __HASH_MAP_IMPL__
-#include "utils/base_log.h"
-#include "utils/hash_map.h"
-
-#include "parse_wiasm.h"
 #include "wired.def.h"
+#define __HASH_MAP_IMPL__
+
+#include "utils/hash_map.h"
+#include "parse_wiasm.h"
+#include "ccbase/logs/log.h"
 
 void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
 
@@ -20,7 +20,7 @@ void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
     render_op.args.arg0 = op->args.arg_64.arg0;
 
     *size_out = sizeof(raw_128_op);
-    CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_128_op)),
+    CCB_CHECK(memcpy(data_out, &render_op, sizeof(raw_128_op)) != NULL,
                    "can't copy instruction data");
     break;
   }
@@ -33,7 +33,7 @@ void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
     render_op.args.arg1 = op->args.arg_128.arg1;
 
     *size_out = sizeof(raw_192_op);
-    CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_192_op)),
+    CCB_CHECK(memcpy(data_out, &render_op, sizeof(raw_192_op)) != NULL,
                    "can't copy instruction data");
     break;
   }
@@ -47,8 +47,8 @@ void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
     render_op.args.arg2 = op->args.arg_192.arg2;
 
     *size_out = sizeof(raw_256_op);
-    CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_256_op)),
-                   "can't copy instruction data");
+    CCB_CHECK(memcpy(data_out, &render_op, sizeof(raw_256_op)) != NULL,
+              "can't copy instruction data");
     break;
   }
 
@@ -58,21 +58,21 @@ void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
     hash_map_t *map = find_hash_label(op->args.flag);
 
     if (map == NULL)
-      ERROR("can't find lable '%s'", op->args.flag)
+      CCB_ERROR("can't find lable '%s'", op->args.flag)
 
     render_op.op_code = op->type;
     render_op.op_size = inst_128;
     render_op.args.arg0 = find_hash_label(op->args.flag)->addr;
 
     *size_out = sizeof(raw_128_op);
-    CHECK_ALLOCATE(memcpy(data_out, &render_op, sizeof(raw_128_op)),
+    CCB_CHECK(memcpy(data_out, &render_op, sizeof(raw_128_op)) != NULL,
                    "can't copy instruction data");
 
     break;
   }
 
   default:
-    ERROR("Unknow instruction with type %u", op->size)
+    CCB_ERROR("Unknow instruction with type %u", op->size)
     break;
   }
 }
@@ -80,7 +80,7 @@ void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
 char *readAllFile(char *path) {
   // open file
   FILE *fp = fopen(path, "rb");
-  CHECK_ALLOCATE(fp, "Can't read the file %s", path);
+  CCB_CHECK(fp != NULL, "Can't read the file %s", path);
 
   // get file size
   fseek(fp, 0, SEEK_END);
@@ -89,11 +89,10 @@ char *readAllFile(char *path) {
 
   // read data
   char *buffer = (char *)malloc(sizeof(char) * (size + 1));
-  CHECK_ALLOCATE(buffer, "Unable to allocate a buffer of %lu chars", (unsigned long)size)
+  CCB_CHECK(buffer != NULL, "Unable to allocate a buffer of %lu chars", (unsigned long)size)
 
-  size_t got;
-  CHECK_READ_WRITE(size, got = fread(buffer, sizeof(char), size, fp),
-                   "unable to read the file %s (expected %lu != got %lu)",
+  size_t got = fread(buffer, sizeof(char), size, fp);
+  CCB_CHECK(size == got, "unable to read the file %s (expected %lu != got %lu)",
                    path, (unsigned long)size, (unsigned long)got);
   buffer[got] = '\0';
 
@@ -104,13 +103,16 @@ char *readAllFile(char *path) {
 }
 
 int main(int argc, char *argv[]) {
+  // init log
+  ccb_InitLog("wiasm_to_wbin.log");  
+
   // check args
   if (argc <= 1)
-    ERROR("No file pass as arg")
+    CCB_ERROR("No file pass as arg")
 
   // read file
   char *rawText = readAllFile(argv[1]);
-  INFO("raw txt:\n\n%s\n", rawText);
+  CCB_INFO("raw txt:\n\n%s\n", rawText);
 
   wired_vm_header_t header = {0};
   header.identificator[0] = 'W';
@@ -123,22 +125,22 @@ int main(int argc, char *argv[]) {
   size_t ok;
   ok = sscanf(rawText, "ram_size:%" SCNu64 "\n", &(header.ram_size));
   if (!ok) {
-    ERROR("Invalid ram size or ram size not privided")
+    CCB_ERROR("Invalid ram size or ram size not privided")
   }
 
   char *next = strpbrk(rawText, "\n");
   if (next == NULL) {
-    ERROR("Stack not privided")
+    CCB_ERROR("Stack not privided")
   }
 
   ok = sscanf(next + 1, "stack_size:%" SCNu64 "\n", &(header.stack_size));
   if (!ok) {
-    ERROR("Invalid stack size or ram size not privided")
+    CCB_ERROR("Invalid stack size or ram size not privided")
   }
 
   next = strpbrk(next + 1, "\n");
   if (next == NULL) {
-    ERROR("no code found")
+    CCB_ERROR("no code found")
   }
   next++;
 
@@ -159,7 +161,7 @@ int main(int argc, char *argv[]) {
 
   while (current != NULL) {
 
-    // INFO("%d", i)
+    // CCB_INFO("%d", i)
     i++;
 
     switch (*current) {
@@ -240,7 +242,7 @@ int main(int argc, char *argv[]) {
 
     default:
       if (buffer_current - buffer_base > 63)
-        ERROR("Token bigger than 64 bits")
+        CCB_ERROR("Token bigger than 64 bits")
 
       *buffer_current = *current;
       buffer_current++;
@@ -257,15 +259,15 @@ int main(int argc, char *argv[]) {
 
   // check entry
   if (!found_entry)
-    ERROR("did not find the entry point, please set a 'ENTRY:' lable")
+    CCB_ERROR("did not find the entry point, please set a 'ENTRY:' lable")
 
   // write program
   FILE *fp = fopen("out.wbin", "wb");
   if (fp == NULL)
-    ERROR("can't open/create the output file")
+    CCB_ERROR("can't open/create the output file")
 
   if (1 != fwrite(&header, sizeof(header), 1, fp))
-    ERROR("can't write header")
+    CCB_ERROR("can't write header")
 
   for (size_t i = 0; i < program.len; i++) {
     size_t size_out = 0;
@@ -275,7 +277,7 @@ int main(int argc, char *argv[]) {
     render_pgm(&op, &size_out, (char *)&data_out);
 
     if (1 != fwrite(data_out, size_out, 1, fp))
-      ERROR("can't wriet instructions")
+      CCB_ERROR("can't wriet instructions")
   }
 
   // free resources
@@ -284,6 +286,7 @@ int main(int argc, char *argv[]) {
   free(rawText);
   fclose(fp);
 
-  INFO("ENDED")
+  CCB_INFO("ENDED")
+  ccb_CloseLogFile();
   return 0;
 }

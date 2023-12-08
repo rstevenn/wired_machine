@@ -4,7 +4,6 @@
 
 #include "wired.def.h"
 #include "th_process_ctx.h"
-#include "utils/base_log.h"
 
 #ifndef __EXEC_INSTR_H__
 #define __EXEC_INSTR_H__

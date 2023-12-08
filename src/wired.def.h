@@ -6,6 +6,9 @@
 
 #define HEADER "WIRED"
 
+#define CCB_LOGLEVEL 2
+#define CCB_LOGTYPE  2
+
 /// 
 // HEADER
 ///

@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "utils/base_log.h"
 #include "wired.def.h"
 
 // parse args
