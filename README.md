@@ -46,4 +46,5 @@ run :
 * [x] check for memory leaks
 * [x] use https://github.com/rstevenn/ccbase for logging
 * [ ] implement a string view library to improve parssing
+* [ ] refactor parssing
 * [ ] implement .code and .data sections
