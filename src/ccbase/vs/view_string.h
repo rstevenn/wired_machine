@@ -39,8 +39,8 @@ const char* ccb_vst2cst(const ccb_vs vstring); // vstring to cstring !! allocate
 
 // compare ( ret == 0 => false and ret > 0 => true)
 int ccb_vs_eq(const ccb_vs a, const ccb_vs b);
-int ccb_vs_head(const ccb_vs string, const ccb_vs head);
-int ccb_vs_tail(const ccb_vs string, const ccb_vs tail);
+int ccb_vs_is_head(const ccb_vs string, const ccb_vs head);
+int ccb_vs_is_tail(const ccb_vs string, const ccb_vs tail);
 int ccb_vs_in(const ccb_vs string, const ccb_vs sub_string);
 
 // split
@@ -48,8 +48,41 @@ ccb_vs_split ccb_vs_split_char(const ccb_vs string, char split_ch); // split on 
 ccb_vs_split ccb_vs_split_set(const ccb_vs string, const char* split_ch, size_t nb_chs); // split on any char contain on split_ch
 ccb_vs_split ccb_vs_split_string(const ccb_vs string, const ccb_vs split_string); // split on the 1st instance of string
 
+// trim
+const ccb_vs ccb_vs_triml(const ccb_vs string, size_t id); // "abcde", 2 => "cde" if id > len(string) => ""
+const ccb_vs ccb_vs_trimr(const ccb_vs string, size_t id); // "abcde", 2 => "abc" if id > len(string) => ""
+
+const ccb_vs ccb_vs_head(const ccb_vs string, size_t nb);  // "absde", 2 => "ab" id id > len(string) => string
+const ccb_vs ccb_vs_tail(const ccb_vs string, size_t nb);  // "absde", 2 => "de" id id > len(string) => string
+
+// implementation
 #define __CCB_VS_IMP__
 #ifdef __CCB_VS_IMP__
+
+// trim
+const ccb_vs ccb_vs_head(const ccb_vs string, size_t nb) {
+    if (string.len < nb)
+        return string;
+    return (const ccb_vs){.ptr=string.ptr, .len=nb};
+}
+
+const ccb_vs ccb_vs_tail(const ccb_vs string, size_t nb) {
+    if (string.len < nb)
+        return string;
+    return (const ccb_vs){.ptr=&string.ptr[string.len-nb], .len=nb};
+}
+
+const ccb_vs ccb_vs_triml(const ccb_vs string, size_t id) {
+    if (string.len < id)
+        return (const ccb_vs){.ptr=&string.ptr[string.len-1], .len=0};
+    return (const ccb_vs){.ptr=&string.ptr[id], .len=string.len-id};
+}
+
+const ccb_vs ccb_vs_trimr(const ccb_vs string, size_t id) {
+    if (string.len < id)
+        return (const ccb_vs){.ptr=string.ptr, .len=0};
+    return (const ccb_vs){.ptr=string.ptr, .len=string.len-id};
+}
 
 // split
 ccb_vs_split ccb_vs_split_char(const ccb_vs string, char split_ch) {
@@ -79,7 +112,7 @@ ccb_vs_split ccb_vs_split_set(const ccb_vs string, const char* split_ch, size_t 
 
 ccb_vs_split ccb_vs_split_string(const ccb_vs string, const ccb_vs split_string) {
     for (size_t i=0; i<string.len; i++) {
-        if (ccb_vs_head((const ccb_vs){.ptr=&string.ptr[i], .len=(string.len-i)}, split_string)){
+        if (ccb_vs_is_head((const ccb_vs){.ptr=&string.ptr[i], .len=(string.len-i)}, split_string)){
             return (ccb_vs_split) { .front = (const ccb_vs){.ptr=string.ptr, .len=i},
                                     .back  = (const ccb_vs){.ptr=&string.ptr[i+split_string.len], 
                                                             .len=(string.len-i-split_string.len)},
@@ -122,7 +155,7 @@ int ccb_vs_eq(const ccb_vs a, const ccb_vs b) {
     return 1;
 }
 
-int ccb_vs_head(const ccb_vs string, const ccb_vs head) {
+int ccb_vs_is_head(const ccb_vs string, const ccb_vs head) {
     if (string.len < head.len) return 0;
 
     for(size_t i=0; i<head.len; i++){
@@ -131,7 +164,7 @@ int ccb_vs_head(const ccb_vs string, const ccb_vs head) {
     return 1;
 }
 
-int ccb_vs_tail(const ccb_vs string, const ccb_vs tail) {
+int ccb_vs_is_tail(const ccb_vs string, const ccb_vs tail) {
     if (string.len < tail.len) return 0;
 
     for(size_t i=0; i<tail.len; i++){

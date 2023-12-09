@@ -22,50 +22,50 @@ int main() {
     // test eq
     vs_test_true(ccb_vs_eq(ccb_cst2vst("a test"), 
                            ccb_cst2vst("a test")), 
-                 "Test vs_eq true");
+                 "Test vs eq true");
     
     vs_test_false(ccb_vs_eq(ccb_cst2vst("a test"), 
                             ccb_cst2vst("a tesr")), 
-                "Test vs_eq false");
+                "Test vs eq false");
 
     // test head
-    vs_test_true(ccb_vs_head(ccb_cst2vst("a test123"), 
-                             ccb_cst2vst("a test")),
-                 "Test vs_head true");
+    vs_test_true(ccb_vs_is_head(ccb_cst2vst("a test123"), 
+                                ccb_cst2vst("a test")),
+                "Test vs is head true");
     
-    vs_test_false(ccb_vs_head(ccb_cst2vst("a tesr145"), 
-                              ccb_cst2vst("a test")), 
-                  "Test vs_head false");
+    vs_test_false(ccb_vs_is_head(ccb_cst2vst("a tesr145"), 
+                                 ccb_cst2vst("a test")), 
+                  "Test vs is head false");
 
     // test tail
-    vs_test_true(ccb_vs_tail(ccb_cst2vst("a test123"), 
-                             ccb_cst2vst("t123")),
-                 "Test vs_tail true");
+    vs_test_true(ccb_vs_is_tail(ccb_cst2vst("a test123"), 
+                                ccb_cst2vst("t123")),
+                 "Test vs is tail true");
     
-    vs_test_false(ccb_vs_tail(ccb_cst2vst("a tesr145"), 
-                              ccb_cst2vst("t123")), 
-                 "Test vs_tail false");
+    vs_test_false(ccb_vs_is_tail(ccb_cst2vst("a tesr145"), 
+                                 ccb_cst2vst("t123")), 
+                 "Test vs is tail false");
 
     // test in
     vs_test_true(ccb_vs_in(ccb_cst2vst("a test1235z6ad1d51a65"), 
                            ccb_cst2vst("t123")),
-                 "Test vs_in true");
+                 "Test vs in true");
     
     vs_test_false(ccb_vs_in(ccb_cst2vst("a tesr1451d5za151az56d1z"), 
                             ccb_cst2vst("t123")), 
-                 "Test vs_in false");
+                 "Test vs in false");
 
     vs_test_true(ccb_vs_in(ccb_cst2vst("a test1235z6ad1d51a65"), 
                            ccb_cst2vst("a test")),
-                 "Test vs_in true in front");
+                 "Test vs in true in front");
     
     vs_test_true(ccb_vs_in(ccb_cst2vst("a test1235z6ad1d51a65"), 
                            ccb_cst2vst("1a65")),
-                 "Test vs_in true in tail");
+                 "Test vs in true in tail");
 
     vs_test_true(ccb_vs_in(ccb_cst2vst("a test1235z6ad1d51a65"), 
                            ccb_cst2vst("5")),
-                 "Test vs_in true 1ch");
+                 "Test vs in true 1ch");
     
     // test splits
     {
@@ -131,7 +131,69 @@ int main() {
     }
 
     // test trim left and trim right
-    
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("test or not a test");
+        const ccb_vs result = ccb_vs_triml(a, 2);
+
+        vs_test_true(ccb_vs_eq(result, b), "trim left true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("");
+        const ccb_vs result = ccb_vs_triml(a, 25);
+
+        vs_test_true(ccb_vs_eq(result, b), "trim left more than char true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("a test or not a ");
+        const ccb_vs result = ccb_vs_trimr(a, 4);
+
+        vs_test_true(ccb_vs_eq(result, b), "trim right true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("");
+        const ccb_vs result = ccb_vs_trimr(a, 25);
+
+        vs_test_true(ccb_vs_eq(result, b), "trim right more than char true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a tes");
+        const ccb_vs b = ccb_cst2vst("a test");
+        const ccb_vs result = ccb_vs_head(a, 6);
+
+        vs_test_true(ccb_vs_eq(result, b), "head true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("a test or not a test");
+        const ccb_vs result = ccb_vs_head(a, 25);
+
+        vs_test_true(ccb_vs_eq(result, b), "head more than char true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a tes");
+        const ccb_vs b = ccb_cst2vst(" tes");
+        const ccb_vs result = ccb_vs_tail(a, 4);
+
+        vs_test_true(ccb_vs_eq(result, b), "tail true");
+    }
+
+    {
+        const ccb_vs a = ccb_cst2vst("a test or not a test");
+        const ccb_vs b = ccb_cst2vst("a test or not a test");
+        const ccb_vs result = ccb_vs_tail(a, 25);
+
+        vs_test_true(ccb_vs_eq(result, b), "tail more than char true");
+    }
 
     return 0;
 }
