@@ -4,11 +4,15 @@
 #include <inttypes.h>
 
 #include "wired.def.h"
-#define __HASH_MAP_IMPL__
 
+#define __HASH_MAP_IMPL__
 #include "utils/hash_map.h"
 #include "parse_wiasm.h"
 #include "ccbase/logs/log.h"
+
+#define __CCB_VS_IMP__
+#include "ccbase/vs/view_string.h"
+
 
 void render_pgm(operation_t *op, size_t *size_out, char *data_out) {
 
@@ -145,6 +149,9 @@ int main(int argc, char *argv[]) {
   next++;
 
   // instructions and build label table
+  ccb_vs vst_program = ccb_cst2vst((const char *)next);
+  printf(CCB_VS_FMT "\n", CCB_VS_ARG(vst_program));
+
   char buffer_base[64] = {0};
   char *buffer_current = buffer_base;
 
@@ -159,6 +166,24 @@ int main(int argc, char *argv[]) {
   char found_entry = 0;
   int i = 0;
 
+  int found = 0;
+  do {
+    ccb_vs_split split = ccb_vs_split_char(vst_program, '\n');
+    found = split.found;
+    vst_program = split.back;
+
+    // check for label
+    if (ccb_vs_in(split.front, ccb_cst2vst(":"))) {
+      ccb_vs current_vs = split.front;
+
+      while (ccb_vs_is_head(current_vs, ccb_cst2vst(" ")) ||
+             ccb_vs_is_head(current_vs, ccb_cst2vst("\t"))){
+        current_vs = ccb_vs_triml(current_vs, 1);
+      }
+    }
+
+  } while(found);
+  
   while (current != NULL) {
 
     // CCB_INFO("%d", i)

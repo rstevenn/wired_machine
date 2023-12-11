@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-//#define __CCB_VS_IMP__
+#define __CCB_VS_IMP__
 #include "../src/ccbase/vs/view_string.h"
 
 

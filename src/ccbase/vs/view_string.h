@@ -56,7 +56,7 @@ const ccb_vs ccb_vs_head(const ccb_vs string, size_t nb);  // "absde", 2 => "ab"
 const ccb_vs ccb_vs_tail(const ccb_vs string, size_t nb);  // "absde", 2 => "de" id id > len(string) => string
 
 // implementation
-#define __CCB_VS_IMP__
+
 #ifdef __CCB_VS_IMP__
 
 // trim
