@@ -13,7 +13,7 @@
 
 #define SANITYZE_MEM 1
 #define SANITIZE_MATH 1
-#define TH_SWITCH 8
+#define TH_SWITCH 1
 
 // #undef INFO
 // #define CCB_INFO(...)
@@ -222,7 +222,7 @@ int main(int argc, char *argv[]) {
         CCB_INFO("no other thread found")
       }
     }
-    dump_registers(registers);
+    //dump_registers(registers);
   }
 
   CCB_INFO("exit with code %lu", (unsigned long)registers[RT])

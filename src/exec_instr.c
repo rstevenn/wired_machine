@@ -34,6 +34,11 @@ void exec_scall(vm_op_t *op, char *vram, uint64_t *registers,
     break;
   }
 
+  case (2) : {
+     fprintf(stdout, "%lu\n", registers[RA]);
+     break; 
+  }
+
   default:
     CCB_WARNING("Invalid scall number 0x%04lx", (unsigned long)op->args[0])
     break;

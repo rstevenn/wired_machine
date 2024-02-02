@@ -60,6 +60,7 @@ FLAG0:
     jne   ra 
     jnei  0x480
     jnei  FLAG1 
+    saveai 0xfff 0
 
 FLAG1:
     loadi ra 1208
@@ -68,7 +69,11 @@ FLAG1:
     jmpi  FLAG2
 
 FLAG2:
-    jmp_thi  FLAG3
+    loada ra 0xfff
+    addi  ra ra 1
+    savea 0xfff ra
+    scall 2
+    jmp_thi FLAG2
 FLAG3:
     loadi    rt 0
     scall    1
